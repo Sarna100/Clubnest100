@@ -1,12 +1,21 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.contrib import messages
 
+
+from .forms import UserForm, ProfileForm
+from .models import Profile
+
+
+from ClubNest.models import Profile
 
 def home(request):
+    if request.user.is_authenticated:
+        Profile.objects.get_or_create(user=request.user)  # auto create if not exist
     return render(request, 'home.html')
 
 
@@ -47,6 +56,7 @@ def signup(request):
         )
         user.save()
 
+
         return HttpResponse(f"""
             <div style='display:flex; justify-content:center; align-items:center; height:100vh; background:linear-gradient(to right,#a18cd1,#fbc2eb);'>
                 <div style='background:#ffffff; padding:40px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.25); text-align:center; max-width:400px;'>
@@ -60,21 +70,13 @@ def signup(request):
     return render(request, "signup.html")
 
 
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login
-from django.shortcuts import render, redirect
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.contrib.auth.forms import AuthenticationForm
-
 def signin(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)   # user লগইন করানো হচ্ছে
-            return redirect('home')   # লগইন হওয়ার পর home এ যাবে
+            login(request, user)
+            return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
@@ -84,3 +86,33 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('home')
+
+
+@login_required
+def profile(request):
+    # Just display profile info - no forms here
+    return render(request, 'profile.html')
+
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    profile, created = Profile.objects.get_or_create(user=user)  # প্রোফাইল না থাকলে তৈরি করবে
+
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)  # request.FILES!
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile')
+    else:
+        user_form = UserForm(instance=user)
+        profile_form = ProfileForm(instance=profile)
+
+    return render(request, 'edit_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    })

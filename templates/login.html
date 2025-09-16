@@ -118,7 +118,6 @@
 </head>
 <body>
 
-  <a href="{% url 'home' %}" class="back-btn"><i class="fa fa-arrow-left"></i> Back to Home</a>
 
   <div class="container">
     <div class="logo">CN</div>
@@ -156,7 +155,9 @@
 
     <div class="signup">
       Don’t have an account? <a href="{% url 'signup' %}">Sign up</a>
+   
     </div>
+     <a href="{% url 'home' %}" class="back-home">Back to Home</a>
   </div>
 
 </body>

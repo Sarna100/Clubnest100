@@ -4,12 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <title>ClubNest</title>
+
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f4f9;
     }
+
     /* Navbar */
     .navbar {
       display: flex;
@@ -18,57 +23,92 @@
       background: linear-gradient(90deg, #7d3cff, #d63384);
       padding: 15px 40px;
       color: white;
+      flex-wrap: wrap;
     }
+
     .navbar .logo {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
     }
+
     .navbar ul {
       list-style: none;
       display: flex;
       margin: 0;
       padding: 0;
+      flex-wrap: wrap;
     }
+
     .navbar ul li {
       margin: 0 15px;
     }
+
     .navbar ul li a {
       text-decoration: none;
       color: white;
       font-weight: bold;
     }
+
+    .navbar .buttons {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
     .navbar .buttons a {
       text-decoration: none;
       color: white;
       padding: 8px 14px;
       border-radius: 6px;
       margin-left: 10px;
+      font-weight: bold;
     }
+
     .navbar .buttons .signin {
       background: #6c757d;
     }
+
     .navbar .buttons .signup {
       background: #5a189a;
     }
+
+    /* Profile Image Icon */  
+    .profile-img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  margin-left: 10px;
+}
+
 
     /* Hero Section */
     .hero {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       background: linear-gradient(to bottom, #472f91, #000);
       padding: 50px;
       color: white;
     }
+
     .hero-text {
       max-width: 50%;
     }
+
     .hero-text h1 {
       font-size: 40px;
+      margin: 0;
     }
+
     .hero-text p {
       margin: 10px 0 20px;
+      font-size: 18px;
     }
+
     .hero-text a {
       text-decoration: none;
       padding: 12px 20px;
@@ -76,27 +116,34 @@
       margin-right: 10px;
       font-weight: bold;
     }
+
     .hero-text .start {
       background: #d63384;
       color: white;
     }
+
     .hero-text .learn {
       background: transparent;
       border: 2px solid white;
       color: white;
     }
+
     .hero img {
-      width: 450px;
+      width: 400px;
+      max-width: 100%;
       border-radius: 10px;
+      margin-top: 20px;
     }
 
     /* Features */
     .features {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-around;
       padding: 40px;
       background: linear-gradient(to bottom, #dfe6f0, #f4f4f9);
     }
+
     .card {
       background: white;
       border-radius: 12px;
@@ -104,14 +151,36 @@
       width: 280px;
       text-align: center;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin: 10px;
     }
+
     .card img {
       width: 50px;
       margin-bottom: 15px;
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-text {
+        max-width: 100%;
+      }
+      .navbar ul {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 10px;
+      }
+      .navbar .buttons {
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
+
   <!-- Navbar -->
   <div class="navbar">
     <div class="logo">Club Nest</div>
@@ -122,15 +191,23 @@
       <li><a href="#">Clubs</a></li>
       <li><a href="#">Upcoming</a></li>
     </ul>
-    <div class="buttons">
-      {% if user.is_authenticated %}
-        <a href="#" class="signin">My Account ({{ user.username }})</a>
-        <a href="{% url 'logout' %}" class="signup">Logout</a>
+<div class="buttons">
+  {% if user.is_authenticated %}
+    <!-- Circular Profile Image -->
+    <a href="{% url 'profile' %}">
+      {% if user.profile.profile_pic %}
+        <img src="{{ user.profile.profile_pic.url }}" alt="Profile" class="profile-img" />
       {% else %}
-        <a href="{% url 'signin' %}" class="signin">Sign in</a>
-        <a href="{% url 'signup' %}" class="signup">Sign Up</a>
+        <img src="{% static 'default.png' %}" alt="Default" class="profile-img" />
       {% endif %}
-    </div>
+    </a>
+    <a href="{% url 'logout' %}" class="signup">Logout</a>
+  {% else %}
+    <a href="{% url 'signin' %}" class="signin">Sign in</a>
+    <a href="{% url 'signup' %}" class="signup">Sign Up</a>
+  {% endif %}
+</div>
+
   </div>
 
   <!-- Hero Section -->
@@ -142,7 +219,6 @@
       <a href="#" class="learn">Learn More</a>
     </div>
     <div>
-      <!-- Static image from static/images/ folder -->
       <img src="{% static 'images/0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg' %}" alt="Club Image">
     </div>
   </div>
@@ -162,5 +238,6 @@
       <p>Automatic certificate generation for event participants and winners.</p>
     </div>
   </div>
+
 </body>
 </html>
