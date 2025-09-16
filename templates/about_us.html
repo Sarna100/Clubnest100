@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Club Nest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #5d3596;
+            --secondary-color: #f7f7f7;
+            --text-dark: #333;
+            --text-light: #fff;
+            --card-bg-light: #eee4ff;
+            --card-bg-dark: #7a52a3;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px; /* Logo height */
+            margin-right: 10px;
+        }
+
+        .logo span {
+            font-size: 1.8rem; /* Increased font size for better look */
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif; /* New font for design */
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding-bottom: 5px;
+            transition: border-bottom 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            border-bottom: 2px solid var(--text-light);
+        }
+
+        .profile-icon i {
+            font-size: 2rem;
+            color: var(--text-light);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .about-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .about-text-container {
+            flex: 1;
+        }
+
+        .about-text-container h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .about-text-container h4 {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .about-text-container p {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg-light);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .what-we-offer-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .what-we-offer-section h4 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .what-we-offer-section p {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .offer-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .offer-card {
+            background-color: var(--card-bg-dark);
+            color: var(--text-light);
+            padding: 2rem 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .offer-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .offer-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-links {
+                margin-top: 1rem;
+            }
+
+            .about-section {
+                flex-direction: column;
+            }
+
+            .offer-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .offer-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="img.png" alt="Logo">
+                <span>Club Nest</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#">Home</a>
+                <a href="#" class="active">About</a>
+                <a href="#">Events</a>
+                <a href="#">Clubs</a>
+                <a href="#">Upcoming...</a>
+            </nav>
+            <div class="profile-icon">
+                <a href="#"><i class="fa-solid fa-user-circle"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="about-section">
+            <div class="about-text-container">
+                <h2>About Our Club</h2>
+                <h4>Our Mission</h4>
+                <p>We are committed to creating an inclusive environment where students can develop leadership skills, pursue academic excellence, and build lasting relationships that extend beyond university life.</p>
+                <p>Through our diverse range of activities, workshops, and community service projects, we empower our members to become confident leaders and engaged citizens who make a positive impact in their communities.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-star"></i>
+                    <h3>50+</h3>
+                    <p>Active Clubs</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3>500+</h3>
+                    <p>Students Connected</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>200+</h3>
+                    <p>Events Monthly</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-thumbs-up"></i>
+                    <h3>90%</h3>
+                    <p>Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="what-we-offer-section">
+            <h4>What We Offer</h4>
+            <p>ClubNest provides a comprehensive platform designed to enhance your university experience and strengthen campus communities.</p>
+            <div class="offer-cards-grid">
+                <div class="offer-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Event Discovery</h3>
+                    <p>Find exciting club events happening across your campus.</p>
+                </div>
+                <div class="offer-card">
+                    <i class="fas fa-handshake"></i>
+                    <h3>Community Building</h3>
+                    <p>Connect with like-minded students and build lasting friendships.</p>
+                </div>
+                <div class="offer-card">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>Easy Promotion</h3>
+                    <p>Help club organizers reach more students and boost attendance.</p>
+                </div>
+                <div class="offer-card">
+        <i class="fas fa-user-graduate"></i> <!-- ঠিক করা হয়েছে -->
+        <h3>Campus Engagement</h3>
+        <p>Strengthen your university experience through active participation.</p>
+    </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

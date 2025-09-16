@@ -18,6 +18,9 @@ def home(request):
         Profile.objects.get_or_create(user=request.user)  # auto create if not exist
     return render(request, 'home.html')
 
+def about_us(request):
+    return render(request, 'about_us.html')
+
 
 def signup(request):
     if request.method == "POST":
