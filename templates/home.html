@@ -72,17 +72,15 @@
       background: #5a189a;
     }
 
-    /* Profile Image Icon */  
     .profile-img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid white;
-  box-shadow: 0 0 4px rgba(0,0,0,0.2);
-  margin-left: 10px;
-}
-
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+      margin-left: 10px;
+    }
 
     /* Hero Section */
     .hero {
@@ -159,7 +157,6 @@
       margin-bottom: 15px;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .hero {
         flex-direction: column;
@@ -188,26 +185,24 @@
       <li><a href="{% url 'home' %}">Home</a></li>
       <li><a href="{% url 'about_us' %}">About</a></li>
       <li><a href="#">Events</a></li>
-      <li><a href="#">Clubs</a></li>
-      <li><a href="#">Upcoming</a></li>
+      <li><a href="{% url 'upcoming_events' %}">Upcoming</a></li>
     </ul>
-<div class="buttons">
-  {% if user.is_authenticated %}
-    <!-- Circular Profile Image -->
-    <a href="{% url 'profile' %}">
-      {% if user.profile.profile_pic %}
-        <img src="{{ user.profile.profile_pic.url }}" alt="Profile" class="profile-img" />
-      {% else %}
-        <img src="{% static 'default.png' %}" alt="Default" class="profile-img" />
-      {% endif %}
-    </a>
-    <a href="{% url 'logout' %}" class="signup">Logout</a>
-  {% else %}
-    <a href="{% url 'signin' %}" class="signin">Sign in</a>
-    <a href="{% url 'signup' %}" class="signup">Sign Up</a>
-  {% endif %}
-</div>
 
+    <div class="buttons">
+      {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">
+          {% if user.profile.profile_pic %}
+            <img src="{{ user.profile.profile_pic.url }}" alt="Profile" class="profile-img" />
+          {% else %}
+            <img src="{% static 'default.png' %}" alt="Default" class="profile-img" />
+          {% endif %}
+        </a>
+        <a href="{% url 'logout' %}" class="signup">Logout</a>
+      {% else %}
+        <a href="{% url 'signin' %}" class="signin">Sign in</a>
+        <a href="{% url 'signup' %}" class="signup">Sign Up</a>
+      {% endif %}
+    </div>
   </div>
 
   <!-- Hero Section -->
@@ -215,8 +210,7 @@
     <div class="hero-text">
       <h1>WELCOME TO <br> ClubNest</h1>
       <p>- FIND YOUR SPACE, JOIN YOUR NEST</p>
-      <a href="#" class="start">Get Started</a>
-      <a href="#" class="learn">Learn More</a>
+      <a href="{% url 'about_us' %}" class="learn">Learn More</a>
     </div>
     <div>
       <img src="{% static 'images/0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg' %}" alt="Club Image">

@@ -120,8 +120,8 @@ def edit_profile(request):
         'profile_form': profile_form,
     })
 from django.shortcuts import render
-from .models import Event
+from .models import UpcomingEvent
 
-def upcoming_events(request):
-    events = Event.objects.order_by('date')
-    return render(request, 'events/upcoming_events.html', {'events': events})
+def upcoming_events_view(request):
+    events = UpcomingEvent.objects.all().order_by('date', 'time')
+    return render(request, 'upcoming_events.html', {'events': events})

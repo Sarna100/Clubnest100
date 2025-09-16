@@ -49,15 +49,14 @@ def home(request):
     })
 from django.db import models
 
-class Event(models.Model):
-    title = models.CharField(max_length=200)
-    caption = models.TextField()
-    image = models.ImageField(upload_to='events/')
+class UpcomingEvent(models.Model):
+    title = models.CharField(max_length=100)
+    caption = models.TextField(blank=True)
     date = models.DateField()
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    location = models.CharField(max_length=255)
+    time = models.CharField(max_length=50)
+    location = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='upcoming_event_images/', blank=True, null=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.title
 
