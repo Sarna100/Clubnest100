@@ -47,4 +47,17 @@ def home(request):
     return render(request, 'home.html', {
         'image_url': settings.MEDIA_URL + '0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg'
     })
+from django.db import models
+
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    caption = models.TextField()
+    image = models.ImageField(upload_to='events/')
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    location = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
 
