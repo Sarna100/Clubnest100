@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ClubNest | Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom, #f4dede, #2e2e61);
+    }
+
+    .signup-box {
+      background: #f9eefe;
+      padding: 25px;
+      border-radius: 14px;
+      width: 360px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+      color: #333;
+      position: relative;
+    }
+
+    /* Messages box */
+    .message-box {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 14px;
+      animation: fadeOut 5s forwards;
+    }
+    .message-success { background-color: #d4edda; color: #155724; }
+    .message-error { background-color: #f8d7da; color: #721c24; }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .signup-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .signup-header .logo-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: block;
+      object-fit: cover;
+      border: 4px solid rgba(0,0,0,0.1);
+      background: #fff;
+    }
+    .signup-header h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #2d2d2d;
+    }
+    .signup-header p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: #666;
+      font-size: 13px;
+    }
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 8px 8px 8px 34px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: #6a1bbd;
+      box-shadow: 0 0 6px rgba(74,144,226,0.4);
+    }
+
+    .name-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .name-row .input-group { flex: 1; margin-bottom: 0; }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: bold;
+      background: #6a1bbd;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover { background: #6a1bbd; }
+
+    .signup {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 13px;
+      color: #333;
+    }
+    .signup a {
+      color: #6a1bbd;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .signup a:hover { text-decoration: underline; }
+
+    .back-home {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      color: #333;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 420px) {
+      .signup-box { width: 95%; padding: 18px; }
+      .name-row { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-box">
+
+    <!-- ✅ Messages Display -->
+   {% if messages %}
+  {% for message in messages %}
+    <div class="message-box {% if message.tags == 'success' %}message-success{% elif message.tags == 'error' %}message-error{% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+    <div class="signup-header">
+      {% load static %}
+      <img src="{% static 'images/7e59968c-1bf6-4bd6-bb82-586796eb1260.jpeg' %}" alt="Club Nest Logo" class="logo-img">
+      <h3>Join Club Nest</h3>
+      <p>Create your account to get started</p>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="name-row">
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" name="first_name" placeholder="First Name" required>
+        </div>
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" name="last_name" placeholder="Last Name" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-globe"></i>
+        <select name="language" required>
+          <option value="">Select Language</option>
+          <option value="english">English</option>
+          <option value="bangla">Bangla</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" name="email" placeholder="Email" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password1" placeholder="Password" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password2" placeholder="Confirm Password" required>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="signup">
+      Already have an account? <a href="{% url 'signin' %}">Sign in</a>
+    </div>
+    <a href="{% url 'home' %}" class="back-home">Back to Home</a>
+  </div>
+
+</body>
+</html>

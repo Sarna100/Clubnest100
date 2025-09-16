@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ClubNest | Sign In</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom, #f4dede, #2e2e61);
+    }
+
+    .container {
+      background: #f9eefe;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      width: 70px;
+      height: 70px;
+      background: #1a1a2e;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px auto;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    h2 { margin-bottom: 5px; font-size: 20px; font-weight: 600; }
+    p { margin-bottom: 20px; font-size: 14px; color: #333; }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px 40px 10px 35px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #555;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #4b0082;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover { background: #3a0066; }
+
+    .signup {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .signup a {
+      color: #4b0082;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      background: #8a2be2;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .back-btn i { margin-right: 6px; }
+
+    .back-btn:hover { background: #6a1bbd; }
+
+    /* Django form error messages */
+    .errorlist { color: red; margin: 0 0 10px 0; padding: 0; list-style: none; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <a href="{% url 'home' %}" class="back-btn"><i class="fa fa-arrow-left"></i> Back to Home</a>
+
+  <div class="container">
+    <div class="logo">CN</div>
+    <h2>Welcome Back</h2>
+    <p>Sign in to access your club dashboard</p>
+
+    <form method="post" action="{% url 'signin' %}">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <ul class="errorlist">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="input-group">
+        <i class="fa fa-envelope"></i>
+        {{ form.username }}
+      </div>
+
+      <div class="input-group">
+        <i class="fa fa-lock"></i>
+        {{ form.password }}
+      </div>
+
+      <button type="submit" class="btn">Sign In</button>
+    </form>
+
+    <div class="signup">
+      Don’t have an account? <a href="{% url 'signup' %}">Sign up</a>
+    </div>
+  </div>
+
+</body>
+</html>

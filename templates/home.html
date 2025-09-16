@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ClubNest</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+    }
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(90deg, #7d3cff, #d63384);
+      padding: 15px 40px;
+      color: white;
+    }
+    .navbar .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar ul li {
+      margin: 0 15px;
+    }
+    .navbar ul li a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+    .navbar .buttons a {
+      text-decoration: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin-left: 10px;
+    }
+    .navbar .buttons .signin {
+      background: #6c757d;
+    }
+    .navbar .buttons .signup {
+      background: #5a189a;
+    }
+
+    /* Hero Section */
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, #472f91, #000);
+      padding: 50px;
+      color: white;
+    }
+    .hero-text {
+      max-width: 50%;
+    }
+    .hero-text h1 {
+      font-size: 40px;
+    }
+    .hero-text p {
+      margin: 10px 0 20px;
+    }
+    .hero-text a {
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .hero-text .start {
+      background: #d63384;
+      color: white;
+    }
+    .hero-text .learn {
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+    }
+    .hero img {
+      width: 450px;
+      border-radius: 10px;
+    }
+
+    /* Features */
+    .features {
+      display: flex;
+      justify-content: space-around;
+      padding: 40px;
+      background: linear-gradient(to bottom, #dfe6f0, #f4f4f9);
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 280px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card img {
+      width: 50px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">Club Nest</div>
+    <ul>
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Events</a></li>
+      <li><a href="#">Clubs</a></li>
+      <li><a href="#">Upcoming</a></li>
+    </ul>
+    <div class="buttons">
+      {% if user.is_authenticated %}
+        <a href="#" class="signin">My Account ({{ user.username }})</a>
+        <a href="{% url 'logout' %}" class="signup">Logout</a>
+      {% else %}
+        <a href="{% url 'signin' %}" class="signin">Sign in</a>
+        <a href="{% url 'signup' %}" class="signup">Sign Up</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>WELCOME TO <br> ClubNest</h1>
+      <p>- FIND YOUR SPACE, JOIN YOUR NEST</p>
+      <a href="#" class="start">Get Started</a>
+      <a href="#" class="learn">Learn More</a>
+    </div>
+    <div>
+      <!-- Static image from static/images/ folder -->
+      <img src="{% static 'images/0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg' %}" alt="Club Image">
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2920/2920244.png" alt="icon">
+      <p>Easy online registration for university events.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="icon">
+      <p>Club advisors/admins can manage members, posts, and events.</p>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3132/3132263.png" alt="icon">
+      <p>Automatic certificate generation for event participants and winners.</p>
+    </div>
+  </div>
+</body>
+</html>
