@@ -145,8 +145,12 @@ from django.shortcuts import render
 from django.db.models import Q
 from .models import Club  # Make sure Club is your model name
 
+from django.shortcuts import render
+from django.db.models import Q
+from .models import Club
+
 def club_list(request):
-    query = request.GET.get('q')  # Get the search query from the URL
+    query = request.GET.get('q')
     if query:
         clubs = Club.objects.filter(
             Q(name__icontains=query) |
@@ -158,6 +162,7 @@ def club_list(request):
     return render(request, 'club_list.html', {
         'clubs': clubs,
     })
+
 
 
 
