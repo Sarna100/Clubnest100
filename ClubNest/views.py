@@ -141,11 +141,24 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Club
 
+from django.shortcuts import render
+from django.db.models import Q
+from .models import Club  # Make sure Club is your model name
+
 def club_list(request):
-    clubs = Club.objects.all()
-    for c in clubs:
-        print(c.name, c.slug)  # Debug: slug আসছে কিনা চেক করার জন্য
-    return render(request, 'club_list.html', {'clubs': clubs})
+    query = request.GET.get('q')  # Get the search query from the URL
+    if query:
+        clubs = Club.objects.filter(
+            Q(name__icontains=query) |
+            Q(caption__icontains=query)
+        )
+    else:
+        clubs = Club.objects.all()
+
+    return render(request, 'club_list.html', {
+        'clubs': clubs,
+    })
+
 
 
 from django.contrib import messages
