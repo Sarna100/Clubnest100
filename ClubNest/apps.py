@@ -6,3 +6,5 @@ class ClubnestConfig(AppConfig):
 
     def ready(self):
         import ClubNest.signals
+def ready(self):
+    import ClubNest.signals

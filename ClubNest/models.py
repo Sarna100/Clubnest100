@@ -3,10 +3,38 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.shortcuts import render
 
-# Profile model with user OneToOne relation, profile picture, department, semester, and many-to-many clubs
+from django.db import models
+from django.utils.text import slugify  # এই লাইনটা যোগ করো
+
+class Club(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)  # null=True বাদ দিলাম
+    image = models.ImageField(upload_to='club_image/', null=True, blank=True)
+    caption = models.TextField(blank=True)
+    logo = models.ImageField(upload_to='club_logos/', blank=True, null=True)
+    introduction= models.TextField(blank=True)
+    our_goal = models.TextField(blank=True)
+
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=20, blank=True)
+    contact_address = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+
+
+# Profile model
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_pic = models.ImageField(upload_to='profile_pics/', default='default.png')
+    profile_pic = models.ImageField(upload_to='profile_pics/', default='default.png', blank=True, null=True)
+
     department = models.CharField(
         max_length=50,
         choices=[
@@ -17,46 +45,36 @@ class Profile(models.Model):
             ('ENG', 'ENG'),
             ('Archi', 'Archi'),
             ('BBA', 'BBA'),
-        ]
+        ],
+        blank=True,
+        null=True
     )
+
     semester = models.CharField(
         max_length=10,
         choices=[
             ('1st', '1st'), ('2nd', '2nd'), ('3rd', '3rd'),
             ('4th', '4th'), ('5th', '5th'), ('6th', '6th'),
             ('7th', '7th'), ('8th', '8th'),
-        ]
+        ],
+        blank=True,
+        null=True
     )
-    clubs = models.ManyToManyField("Club", blank=True)
+
+    clubs = models.ManyToManyField(Club, blank=True)
 
     def __str__(self):
         return self.user.username
 
 
-# Club model to store clubs
-class Club(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
+# UpcomingEvent model
 
 
-# Home view rendering a template with a sample image url (update as needed)
+
+
+
+# Home view (optional)
 def home(request):
     return render(request, 'home.html', {
         'image_url': settings.MEDIA_URL + '0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg'
     })
-from django.db import models
-
-class UpcomingEvent(models.Model):
-    title = models.CharField(max_length=100)
-    caption = models.TextField(blank=True)
-    date = models.DateField()
-    time = models.CharField(max_length=50)
-    location = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='upcoming_event_images/', blank=True, null=True)
-
-    def _str_(self):
-        return self.title
-

@@ -7,6 +7,8 @@ class UserForm(forms.ModelForm):
         model = User
 
         fields = ['first_name', 'last_name', 'email']
+from django import forms
+from .models import Profile
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -15,4 +17,5 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             'clubs': forms.CheckboxSelectMultiple(),
         }
+
 

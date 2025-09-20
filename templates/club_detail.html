@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ club.name }} | Club Details</title>
+  <style>
+    :root {
+      --primary: #6a3cb5;
+      --accent: #a56eff;
+      --bg-glass: rgba(255, 255, 255, 0.4);
+      --blur: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right top, #e3d5ff, #f3f0ff);
+      color: #333;
+    }
+
+    nav {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      padding: 15px;
+      text-align: center;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    nav a {
+      color: white;
+      margin: 0 20px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 17px;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #ffe6f0;
+    }
+
+    /* Club header with logo and name */
+    .club-header {
+      text-align: center;
+      margin-top: 120px; /* because nav is fixed */
+      margin-bottom: 40px;
+    }
+
+    .club-logo {
+      width: 150px;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      object-fit: contain;
+      box-shadow: 0 4px 15px rgba(106, 60, 181, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .club-logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(106, 60, 181, 0.5);
+    }
+
+    h1 {
+      color: var(--primary);
+      font-size: 2.8rem;
+      margin: 0;
+    }
+
+    .content {
+      max-width: 1000px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+    }
+
+    h2 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    section {
+      margin-top: 40px;
+      padding: 25px;
+      border-radius: 15px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(var(--blur));
+      box-shadow: 0 4px 20px rgb(57, 86, 230);
+      transition: box-shadow 0.4s ease, transform 0.3s ease;
+    }
+
+    section:hover {
+      box-shadow: 0 12px 30px rgba(165,110,255,0.25);
+      transform: translateY(-4px);
+    }
+
+    section p {
+      text-align: justify;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .event-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 5px solid var(--primary);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(106,60,181,0.4);
+    }
+
+    .event-card h3 {
+      margin-top: 0;
+      color: var(--primary);
+      text-align: center;
+      font-size: 20px;
+    }
+
+    a.contact-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a.contact-link:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    /* Scroll animation */
+    .animate {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+
+    .animate.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 600px) {
+      .club-logo {
+        width: 100px;
+      }
+      nav a {
+        font-size: 14px;
+        margin: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#intro">Intro</a>
+  <a href="#goal">Our Goal</a>
+  <a href="#events">Events</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- Club header: Logo + Club Name -->
+<div class="club-header">
+  {% if club.logo %}
+    <img src="{{ club.logo.url }}" alt="{{ club.name }} Logo" class="club-logo" />
+  {% endif %}
+  <h1>{{ club.name }}</h1>
+</div>
+
+<div class="content">
+
+  <!-- Introduction -->
+  <section id="intro" class="animate">
+    <h2>📘 Introduction</h2>
+    <p>{{ club.introduction }}</p>
+  </section>
+
+  <!-- Our Goal -->
+  <section id="goal" class="animate">
+    <h2>🎯 Our Goal</h2>
+    <p>{{ club.our_goal }}</p>
+  </section>
+
+  <!-- Events -->
+  <section id="events" class="animate">
+    <h2>📅 Upcoming Events</h2>
+    {% for event in events %}
+      <div class="event-card">
+        <h3>{{ event.name }}</h3>
+        <p>📆 {{ event.date|date:"F d, Y" }}</p>
+        <p>⏰ {{ event.start_time }} - {{ event.end_time }}</p>
+        <p>📍 {{ event.location }}</p>
+      </div>
+    {% empty %}
+      <p>No upcoming events.</p>
+    {% endfor %}
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="animate">
+    <h2>📞 Contact</h2>
+    <p><strong>📍 Address:</strong> {{ club.contact_address }}</p>
+    <p><strong>📞 Phone:</strong> {{ club.contact_phone }}</p>
+    <p><strong>📧 Email:</strong> <a href="mailto:{{ club.contact_email }}" class="contact-link">{{ club.contact_email }}</a></p>
+  </section>
+
+</div>
+
+<script>
+  // Smooth scroll
+  document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        window.scrollTo({ top: targetSection.offsetTop - 70, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Scroll animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('show');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.animate').forEach(el => {
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>

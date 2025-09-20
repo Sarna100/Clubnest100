@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),  # Home page
     path('clubnest/', include('ClubNest.urls')),  # ClubNest app URLs
+
 ]
 
 if settings.DEBUG:

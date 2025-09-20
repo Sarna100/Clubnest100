@@ -4,8 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-
+from django.http import HttpResponse, JsonResponse
 
 from .forms import UserForm, ProfileForm
 from .models import Profile
@@ -120,8 +119,70 @@ def edit_profile(request):
         'profile_form': profile_form,
     })
 from django.shortcuts import render
-from .models import UpcomingEvent
+from django.shortcuts import render
 
-def upcoming_events_view(request):
-    events = UpcomingEvent.objects.all().order_by('date', 'time')
-    return render(request, 'upcoming_events.html', {'events': events})
+from datetime import date
+
+from django.shortcuts import render
+
+from datetime import date
+
+
+
+
+
+
+# app/views.py
+from django.shortcuts import render
+from .models import Club
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Club
+
+def club_list(request):
+    clubs = Club.objects.all()
+    for c in clubs:
+        print(c.name, c.slug)  # Debug: slug আসছে কিনা চেক করার জন্য
+    return render(request, 'club_list.html', {'clubs': clubs})
+
+
+from django.contrib import messages
+
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.contrib import messages
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Club
+
+@login_required
+def join_club(request, club_id):
+    club = get_object_or_404(Club, id=club_id)
+    profile = request.user.profile
+    if club not in profile.clubs.all():
+        profile.clubs.add(club)
+        messages.success(request, f"Thank you for joining {club.name}!")
+    else:
+        messages.info(request, f"You are already a member of {club.name}.")
+
+    return redirect('club_detail', slug=club.slug)
+    # ক্লাব লিস্ট পেজে রিডাইরেক্ট করবে
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Club
+
+def club_detail(request, slug):
+    club = get_object_or_404(Club, slug=slug)
+    return render(request, 'club_detail.html', {'club': club})
+
+
+
