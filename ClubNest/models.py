@@ -78,3 +78,29 @@ def home(request):
     return render(request, 'home.html', {
         'image_url': settings.MEDIA_URL + '0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg'
     })
+
+
+class Event(models.Model):
+    CATEGORY_CHOICES = [
+        ('sport', 'Sport'),
+        ('cultural', 'Cultural'),
+        ('math', 'Math'),
+        ('drama', 'Drama'),
+        ('cybersecurity', 'Cyber Security'),
+        ('software-hardware', 'Software & Hardware'),
+        ('english-learning', 'English Learning'),
+        ('debating-speaking', 'Debating & Public Speaking'),
+    ]
+
+    title = models.CharField(max_length=200)
+    society = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField()
+    date = models.DateField()
+    time = models.TimeField()
+    location = models.CharField(max_length=200)
+    attendees = models.PositiveIntegerField(default=0)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
+    image = models.ImageField(upload_to='event_images/')
+
+    def __str__(self):
+        return self.title

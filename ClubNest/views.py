@@ -204,3 +204,21 @@ def club_detail(request, slug):
 
 
 
+from django.shortcuts import render
+from .models import Event
+import datetime
+
+def events_page(request):
+    category = request.GET.get("category", "")
+    today = request.GET.get("today", "")
+
+    events = Event.objects.all()
+
+    if category:
+        events = events.filter(category=category)
+    if today:
+        today_date = datetime.date.today()
+        events = events.filter(date=today_date)
+
+    return render(request, "events_page.html", {"events": events})
+

@@ -18,4 +18,6 @@ urlpatterns = [
 
     # ✅ Club detail by slug
     path('clubs/<slug:slug>/', views.club_detail, name='club_detail'),
+
+    path('events/', views.events_page, name="events_page"),
 ]

@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Club Nest - Events</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to bottom, #e2c8f7, #c6b2f9);
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #572873, #b47fd3);
+      transition: background 0.3s ease;
+      height: 80px;
+    }
+
+    .navbar .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ffffff !important;
+    }
+
+    .navbar .navbar-nav {
+      margin-left: 10px;
+    }
+
+    .navbar .nav-link {
+      color: #ffffff !important;
+      line-height: 80px;
+    }
+
+    /* Event Cards */
+    .event-card {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .event-card:hover {
+      transform: scale(1.03);
+    }
+
+    .event-image {
+      height: 200px;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    /* Search + Filter */
+    .search-bar {
+      margin: 30px 0;
+    }
+
+    /* Icons in cards */
+    .event-icons i {
+      margin-right: 5px;
+      color: #572873;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .navbar .nav-link {
+        line-height: normal;
+        padding: 0.5rem 0.75rem;
+      }
+      .navbar .navbar-brand {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand ms-4" href="#">Club Nest</a>
+    <div>
+      <ul class="navbar-nav ms-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#">Events</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Clubs</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Upcoming</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Discover Section -->
+<div class="container text-center mt-5">
+  <h2>Discover Events</h2>
+  <p class="mt-3">Find Your Next Adventure on Campus</p>
+  <p>Explore exciting events happening across your university. From workshops and seminars to social gatherings and competitions, there’s something for everyone.</p>
+
+  <!-- Search + Filter -->
+  <div class="row search-bar justify-content-center g-2">
+    <div class="col-md-4">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search events...">
+    </div>
+    <div class="col-md-3">
+      <select id="categoryFilter" class="form-control">
+        <option value="">All categories</option>
+        <option value="sport">Sport</option>
+        <option value="cultural">Cultural</option>
+        <option value="math">Math</option>
+        <option value="drama">Drama</option>
+        <option value="cybersecurity">Cyber Security</option>
+        <option value="software-hardware">Software & Hardware</option>
+        <option value="english-learning">English Learning</option>
+        <option value="debating-speaking">Debating & Public Speaking</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select id="dateFilter" class="form-control">
+        <option value="">All Dates</option>
+        <option value="today">Today</option>
+        <option value="this_week">This Week</option>
+        <option value="this_month">This Month</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Event Cards -->
+<div class="container mt-4">
+  <div class="row g-4" id="eventsContainer">
+    {% for event in events %}
+    <div class="col-md-4 event-card-wrapper"
+         data-category="{{ event.category|default:''|lower }}"
+         data-date="{{ event.date|date:'Y-m-d'|default:'' }}">
+      <div class="card event-card">
+        {% if event.image %}
+        <img src="{{ event.image.url }}" class="event-image" alt="{{ event.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ event.title }}</h5>
+          {% if event.society %}
+          <p class="text-muted">{{ event.society }}</p>
+          {% endif %}
+          <p class="card-text">{{ event.description|truncatewords:20 }}</p>
+          <div class="event-icons mb-2">
+            <p><i class="bi bi-calendar-event"></i> <b>{{ event.date|default:"TBD" }}</b> • <i class="bi bi-clock"></i> {{ event.time|default:"TBD" }}</p>
+            <p><i class="bi bi-geo-alt"></i> {{ event.location|default:"Location TBD" }}</p>
+            <p><i class="bi bi-people"></i> {{ event.attendees|default:"0" }} attending</p>
+          </div>
+          <a href="#" class="btn btn-dark">Join Event</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center">No events available.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Filtering JS -->
+<script>
+  const categoryFilter = document.getElementById('categoryFilter');
+  const dateFilter = document.getElementById('dateFilter');
+  const searchInput = document.getElementById('searchInput');
+  const eventCards = document.querySelectorAll('.event-card-wrapper');
+
+  function filterEvents() {
+    const category = categoryFilter.value.toLowerCase();
+    const dateFilterValue = dateFilter.value.toLowerCase();
+    const search = searchInput.value.toLowerCase().trim();
+    const today = new Date();
+
+    eventCards.forEach(card => {
+      const title = card.querySelector('.card-title').textContent.toLowerCase();
+      const cat = card.dataset.category ? card.dataset.category.toLowerCase() : '';
+      const eventDateStr = card.dataset.date ? card.dataset.date : '';
+      const eventDate = eventDateStr ? new Date(eventDateStr) : null;
+
+      // Category filter
+      const matchesCategory = !category || cat === category;
+
+      // Date filter
+      let matchesDate = true;
+      if (dateFilterValue && eventDate) {
+        if (dateFilterValue === 'today') {
+          matchesDate = eventDate.toDateString() === today.toDateString();
+        } else if (dateFilterValue === 'this_week') {
+          const startOfWeek = new Date(today);
+          startOfWeek.setDate(today.getDate() - today.getDay());
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          matchesDate = eventDate >= startOfWeek && eventDate <= endOfWeek;
+        } else if (dateFilterValue === 'this_month') {
+          matchesDate = eventDate.getMonth() === today.getMonth() &&
+                        eventDate.getFullYear() === today.getFullYear();
+        }
+      }
+
+      // Search filter
+      const matchesSearch = !search || title.includes(search);
+
+      // Show/hide card
+      card.style.display = (matchesCategory && matchesDate && matchesSearch) ? '' : 'none';
+    });
+  }
+
+  categoryFilter.addEventListener('change', filterEvents);
+  dateFilter.addEventListener('change', filterEvents);
+  searchInput.addEventListener('input', filterEvents);
+</script>
+
+</body>
+</html>
