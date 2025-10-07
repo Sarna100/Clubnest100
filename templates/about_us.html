@@ -217,20 +217,18 @@
     <header class="header">
         <div class="container nav-container">
             <div class="logo">
-                <img src="img.png" alt="Logo">
+               
                 <span>Club Nest</span> 
             </div>
             <nav class="nav-links">
                <a href="{% url 'home' %}">Home</a>
 
                 <a href="#" class="active">About</a>
-                <a href="#">Events</a>
+                   <a href="{% url 'events_page' %}">Event</a>
                 <a href="{% url 'club_list' %}">club</a>
-                <a href="#">Upcoming...</a>
+               
             </nav>
-            <div class="profile-icon">
-                <a href="#"><i class="fa-solid fa-user-circle"></i></a>
-            </div>
+           
         </div>
     </header>
 

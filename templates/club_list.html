@@ -1,4 +1,6 @@
 {% load static %}
+{% load club_tags %} {# user_joined filter #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,10 +28,7 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
 
-    header .logo {
-      font-size: 22px;
-      letter-spacing: 2px;
-    }
+    header .logo { font-size: 22px; letter-spacing: 2px; }
 
     nav a {
       color: white;
@@ -38,10 +37,7 @@
       font-weight: 600;
       transition: color 0.3s ease;
     }
-
-    nav a:hover {
-      color: #ffc0cb;
-    }
+    nav a:hover { color: #ffc0cb; }
 
     form {
       max-width: 500px;
@@ -49,7 +45,6 @@
       display: flex;
       justify-content: center;
     }
-
     input[type="search"] {
       width: 80%;
       padding: 12px 15px;
@@ -58,7 +53,6 @@
       font-size: 16px;
       outline: none;
     }
-
     button[type="submit"] {
       background: #7d5ccf;
       border: none;
@@ -69,27 +63,27 @@
       color: white;
       transition: background 0.3s ease;
     }
+    button[type="submit"]:hover { background: #956fd9; }
 
-    button[type="submit"]:hover {
-      background: #956fd9;
-    }
-
+    /* CLUBS GRID */
     #clubs-container {
-      max-width: 1000px;
-      margin: 0 auto 50px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto 50px;
+      padding: 0 20px;
+      justify-items: center;
     }
 
     .club {
       background: #e0e7ff;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgb(141 76 190 / 0.4);
-      width: 280px;
+      width: 100%;
+      max-width: 350px;
       padding: 15px 20px 30px;
-      color: #ccc;
+      color: #171515;
       text-align: center;
       position: relative;
       transition: transform 0.3s ease;
@@ -99,37 +93,12 @@
       height: 400px;
     }
 
-    .club:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 30px rgb(141 76 190 / 0.7);
-    }
+    .club:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgb(141 76 190 / 0.7); }
+    .club h3 { margin-top: 10px; font-size: 22px; font-weight: 700; color: #171515; }
+    .club img { width: 100%; height: 160px; object-fit: contain; border-radius: 8px; background: #ffffff; }
+    .club p { font-size: 14px; color: #171515; text-align: justify; flex-grow: 1; }
 
-    .club h3 {
-      margin-top: 10px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #171515;
-    }
-
-    .club img {
-      width: 100%;
-      height: 160px;
-      object-fit: contain;
-      border-radius: 8px;
-      background: #ffffff;
-    }
-
-    .club p {
-      font-size: 14px;
-      color: #171515;
-      text-align: justify;
-      hyphens: auto;
-      word-spacing: normal;
-      flex-grow: 1;
-    }
-
-    button.join-btn,
-    a.join-btn {
+    button.join-btn, a.join-btn {
       background-color: #5a189a;
       border: none;
       padding: 10px 22px;
@@ -146,11 +115,9 @@
       display: inline-block;
     }
 
-    button.join-btn:hover,
-    a.join-btn:hover {
-      background-color: #c79eff;
-    }
+    button.join-btn:hover, a.join-btn:hover { background-color: #c79eff; }
 
+    /* MESSAGE OVERLAY */
     #message-overlay {
       display: none;
       position: fixed;
@@ -159,9 +126,7 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      display: flex;
     }
-
     .message-box {
       background: white;
       padding: 30px 40px;
@@ -173,7 +138,6 @@
       box-shadow: 0 0 15px rgba(90, 24, 154, 0.7);
       min-width: 300px;
     }
-
     #close-message {
       margin-top: 25px;
       padding: 10px 30px;
@@ -185,21 +149,11 @@
       color: white;
       font-weight: 600;
     }
+    #close-message:hover { background-color: #7d3cff; }
 
-    #close-message:hover {
-      background-color: #7d3cff;
-    }
-
-    @media(max-width: 650px) {
-      #clubs-container {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .club {
-        width: 90%;
-      }
-    }
+    /* RESPONSIVE */
+    @media (max-width: 1024px) { #clubs-container { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { #clubs-container { grid-template-columns: repeat(1, 1fr); } }
   </style>
 </head>
 <body>
@@ -210,7 +164,7 @@
     <a href="{% url 'home' %}">Home</a>
     <a href="{% url 'about_us' %}">About</a>
     <a href="{% url 'club_list' %}">Clubs</a>
-
+    <a href="{% url 'events_page' %}">Events</a>
     {% if user.is_authenticated %}
       <a href="{% url 'logout' %}">Logout</a>
     {% else %}
@@ -219,8 +173,7 @@
   </nav>
 </header>
 
-<!-- Message overlay -->
-<div id="message-overlay" style="display:none;">
+<div id="message-overlay">
   <div class="message-box">
     <p>Thank you for joining!</p>
     <button id="close-message">Close</button>
@@ -234,39 +187,40 @@
 
 <div id="clubs-container">
   {% for club in clubs %}
-  <div class="club" data-club-id="{{ club.id }}">
+    <div class="club" data-club-id="{{ club.id }}">
+      {% if club.logo %}
+        <img src="{{ club.logo.url }}" alt="{{ club.name }} Logo" />
+      {% endif %}
+      <h3>{{ club.name }}</h3>
+      <p>{{ club.caption }}</p>
 
-    {% if club.logo %}
-      <img src="{{ club.logo.url }}" alt="{{ club.name }} Logo" class="club-logo" />
-    {% endif %}
+      {% if user.is_authenticated %}
+        {% if club|user_joined:user %}
+<a href="{% url 'club_detail' club.slug %}" class="join-btn" style="background-color:#28a745;">View Club</a>
 
-    <h3>{{ club.name }}</h3>
-    <p>{{ club.caption }}</p>
+        {% else %}
+          <button class="join-btn" data-url="{% url 'join_club' club.id %}" data-club-id="{{ club.id }}">Join Club</button>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'signin' %}" class="join-btn">Login to Join</a>
+      {% endif %}
 
-    {% if user.is_authenticated %}
-      <button class="join-btn" data-url="{% url 'join_club' club.id %}" data-club-id="{{ club.id }}">Join Club</button>
-    {% else %}
-      <a href="{% url 'signin' %}" class="join-btn">Login to Join</a>
-    {% endif %}
-
-  </div>
+    </div>
   {% empty %}
-  <p style="text-align:center; color:#bbb;">No clubs found.</p>
+    <p style="text-align:center; color:#bbb;">No clubs found.</p>
   {% endfor %}
 </div>
 
 <script>
   document.querySelectorAll('.join-btn').forEach(button => {
-    button.addEventListener('click', function(event) {
-      if (this.tagName.toLowerCase() === 'button') {
+    if(button.tagName.toLowerCase() === 'button'){
+      button.addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('message-overlay').style.display = 'flex';
         const url = this.getAttribute('data-url');
-        setTimeout(() => {
-          window.location.href = url;
-        }, 2000);
-      }
-    });
+        setTimeout(() => { window.location.href = url; }, 2000);
+      });
+    }
   });
 
   document.getElementById('close-message').addEventListener('click', function() {

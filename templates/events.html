@@ -3,20 +3,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Club Nest - Events</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
+    /* ====== Reset default margin/padding ====== */
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ====== Navbar ====== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background: linear-gradient(90deg, #4b2e83, #a56eff);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    header .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    header nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    header nav a:hover {
+      color: #ffd6f7;
+    }
+
+    /* ====== Body ====== */
     body {
       background: linear-gradient(to bottom, #f5f7fa, #e4e9f0);
       font-family: 'Arial', sans-serif;
-      padding-top: 40px;
+      padding-top: 20px;
     }
 
     h2 {
       font-size: 2.5rem;
       font-weight: 700;
       color: #4b2e83;
+      margin-top: 30px;
+    }
+
+    /* ====== Event Cards ====== */
+    .row.g-4.justify-content-center > .col-lg-4,
+    .row.g-4.justify-content-center > .col-md-6 {
+      display: flex; /* Make columns flex containers */
     }
 
     .event-card {
@@ -25,7 +72,11 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       transition: transform 0.3s, box-shadow 0.3s;
       background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex: 1; /* all cards same height */
     }
+
     .event-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 12px 25px rgba(0,0,0,0.2);
@@ -41,6 +92,10 @@
     .card-body {
       padding: 25px;
       text-align: center;
+      flex: 1; /* Take remaining space to keep all cards equal height */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .card-title {
@@ -68,22 +123,11 @@
       font-weight: 600;
       font-size: 1rem;
       padding: 8px 20px;
+      margin-top: 10px;
     }
     .btn-dark:hover {
       background-color: #351f5a;
       border-color: #351f5a;
-    }
-
-    .btn-primary {
-      background-color: #2575fc;
-      border-color: #2575fc;
-      font-weight: 600;
-      font-size: 1rem;
-      padding: 8px 20px;
-    }
-    .btn-primary:hover {
-      background-color: #1a55c2;
-      border-color: #1a55c2;
     }
 
     .btn-success {
@@ -92,6 +136,7 @@
       font-weight: 600;
       font-size: 1rem;
       padding: 8px 20px;
+      margin-top: 10px;
     }
     .btn-success:hover {
       background-color: #218838;
@@ -107,115 +152,31 @@
       border-radius: 12px;
     }
 
-    /* Certificate Preview Styles */
-    .certificate-container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      padding: 40px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .certificate-border {
-      border: 15px double #4b2e83;
-      padding: 30px;
-      position: relative;
-    }
-    
-    .certificate-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .certificate-title {
-      font-size: 2.5rem;
-      color: #4b2e83;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    
-    .certificate-subtitle {
-      font-size: 1.2rem;
-      color: #666;
-      margin-bottom: 20px;
-    }
-    
-    .certificate-body {
-      text-align: center;
-      margin: 30px 0;
-    }
-    
-    .certificate-text {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    
-    .recipient-name {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #4b2e83;
-      margin: 20px 0;
-      padding: 10px;
-      border-bottom: 2px solid #4b2e83;
-      display: inline-block;
-    }
-    
-    .certificate-details {
-      margin: 30px 0;
-      text-align: left;
-    }
-    
-    .detail-item {
-      margin-bottom: 10px;
-      display: flex;
-    }
-    
-    .detail-label {
-      font-weight: 600;
-      width: 150px;
-    }
-    
-    .certificate-footer {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 40px;
-    }
-    
-    .signature-box {
-      text-align: center;
-      width: 200px;
-    }
-    
-    .signature-line {
-      border-top: 1px solid #333;
-      margin-top: 60px;
-      width: 100%;
-    }
-    
-    .signature-name {
-      margin-top: 5px;
-      font-weight: 600;
-    }
-
     /* Responsive adjustments */
     @media (max-width: 768px) {
       h2 { font-size: 2rem; }
       .card-title { font-size: 1.4rem; }
       .event-image { height: 180px; }
-      .certificate-container { padding: 20px; }
-      .certificate-border { padding: 15px; }
-      .certificate-title { font-size: 1.8rem; }
-      .recipient-name { font-size: 1.5rem; }
-      .certificate-footer { flex-direction: column; }
-      .signature-box { width: 100%; margin-bottom: 20px; }
     }
   </style>
 </head>
 <body>
+
+<!-- ====== Navbar ====== -->
+<header>
+  <div class="logo">Club Nest</div>
+  <nav>
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'about_us' %}">About</a>
+    <a href="{% url 'club_list' %}">Clubs</a>
+    <a href="{% url 'events_page' %}">Events</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <a href="{% url 'signin' %}">Login</a>
+    {% endif %}
+  </nav>
+</header>
 
 <div class="container">
   <h2 class="text-center mb-5">Discover Events</h2>
@@ -243,35 +204,37 @@
           <img src="{{ event.image.url }}" class="event-image" alt="{{ event.title }}">
         {% endif %}
         <div class="card-body">
-          <h5 class="card-title">{{ event.title }}</h5>
-          {% if event.society %}
-            <p class="text-muted">{{ event.society }}</p>
-          {% endif %}
-          <p class="card-text">{{ event.description|truncatewords:25 }}</p>
-          <div class="event-icons mb-3">
-            <p><i class="bi bi-calendar-event"></i> <b>{{ event.date }}</b> • <i class="bi bi-clock"></i> {{ event.time }}</p>
-            <p><i class="bi bi-geo-alt"></i> {{ event.location }}</p>
-            <p><i class="bi bi-people"></i> {{ event.attendees }} attending</p>
+          <div>
+            <h5 class="card-title">{{ event.title }}</h5>
+            {% if event.society %}
+              <p class="text-muted">{{ event.society }}</p>
+            {% endif %}
+            <p class="card-text">{{ event.description|truncatewords:25 }}</p>
+            <div class="event-icons mb-3">
+              <p><i class="bi bi-calendar-event"></i> <b>{{ event.date }}</b> • <i class="bi bi-clock"></i> {{ event.time }}</p>
+              <p><i class="bi bi-geo-alt"></i> {{ event.location }}</p>
+              <p><i class="bi bi-people"></i> {{ event.attendees }} attending</p>
+            </div>
           </div>
-
-          {% if request.user.is_authenticated %}
-            {% if event.date >= today %}
-              {% if not es.joined %}
-                <a href="{% url 'join_event' event.id %}" class="btn btn-dark">Join Event</a>
+          <div>
+            {% if request.user.is_authenticated %}
+              {% if event.date >= today %}
+                {% if not es.joined %}
+                  <a href="{% url 'join_event' event.id %}" class="btn btn-dark">Join Event</a>
+                {% else %}
+                  <span class="badge bg-success p-2">Joined</span>
+                {% endif %}
               {% else %}
-                <span class="badge bg-success p-2">Joined</span>
+                {% if es.attended %}
+                  <a href="{% url 'view_certificate' es.participation_id %}" class="btn btn-success">Show Certificate</a>
+                {% else %}
+                  <span class="badge bg-secondary p-2">You did not attend</span>
+                {% endif %}
               {% endif %}
             {% else %}
-              {% if es.attended %}
-    <a href="{% url 'view_certificate' es.participation_id %}" class="btn btn-success">Show Certificate</a>
-{% else %}
-    <span class="badge bg-secondary p-2">You did not attend</span>
-{% endif %}
+              <a href="{% url 'signin' %}" class="btn btn-dark">Login to Join</a>
             {% endif %}
-          {% else %}
-            <a href="{% url 'signin' %}" class="btn btn-dark">Login to Join</a>
-          {% endif %}
-
+          </div>
         </div>
       </div>
     </div>
@@ -284,10 +247,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Enable manual-close toasts (user can click X to close)
+  // Enable manual-close toasts
   var toastElList = [].slice.call(document.querySelectorAll('.toast'))
   toastElList.map(function(toastEl) {
-    return new bootstrap.Toast(toastEl, { autohide: false }).show()  // user closes manually
+    return new bootstrap.Toast(toastEl, { autohide: false }).show()
   })
 </script>
 
