@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: "Times New Roman", serif;
+      background: #f5f5f5;
+    }
+    
+    .certificate {
+      border: 15px double #8B4513;
+      padding: 40px;
+      background: white;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    
+    .header {
+      border-bottom: 3px solid #8B4513;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .university {
+      font-size: 24px;
+      font-weight: bold;
+      color: #8B4513;
+      margin-bottom: 5px;
+    }
+    
+    .address {
+      font-size: 16px;
+      color: #8B4513;
+    }
+    
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #8B4513;
+      margin: 30px 0 10px 0;
+    }
+    
+    .subtitle {
+      font-size: 20px;
+      color: #D4AF37;
+      margin-bottom: 20px;
+    }
+    
+    .event-name {
+      font-size: 18px;
+      color: #8B4513;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+    
+    .content {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 30px 0;
+      color: #333;
+    }
+    
+    .highlight {
+      font-weight: bold;
+      color: #8B4513;
+    }
+    
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 2px solid #8B4513;
+    }
+    
+    .signature {
+      text-align: center;
+      width: 45%;
+    }
+    
+    .signature-line {
+      border-top: 1px solid #000;
+      width: 150px;
+      margin: 0 auto 10px auto;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <!-- Header -->
+    <div class="header">
+      <div class="university">SHRI RAMSWAROOP MEMORIAL UNIVERSITY</div>
+      <div class="address">LUCKNOW-DEVA ROAD, BARABANKI</div>
+    </div>
+    
+    <!-- Title -->
+    <div>
+      <div class="title">CERTIFICATE</div>
+      <div class="subtitle">of Achievement</div>
+      <div class="event-name">{{ event.title }}</div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <p>This is to certify that <span class="highlight">{{ user.get_full_name|default:user.username }}</span></p>
+      <p>has successfully participated in the event</p>
+      <p>"<span class="highlight">{{ event.title }}</span>"</p>
+      <p>organized by <span class="highlight">{{ event.society|default:"Club Nest" }}</span></p>
+      <p>held on <span class="highlight">{{ event.date|date:"jS F, Y" }}</span></p>
+    </div>
+    
+    <!-- Signatures -->
+    <div class="signatures">
+      <div class="signature">
+        <div class="signature-line"></div>
+        <div><strong>Dr. Manoj Bhardwaj</strong></div>
+        <div>Faculty Coordinator</div>
+        <div>Tech Nation Club</div>
+      </div>
+      
+      <div class="signature">
+        <div class="signature-line"></div>
+        <div><strong>Dr. Veena Singh</strong></div>
+        <div>IIC President</div>
+        <div>SRMU</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

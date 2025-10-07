@@ -1,0 +1,326 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate of Participation - SRMU</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Times New Roman', serif;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .certificate-container {
+      width: 280mm;
+      height: 190mm;
+      background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
+      margin: 0 auto 20px auto;
+      padding: 15mm;
+      position: relative;
+      border: 15px double #8B4513;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    }
+    
+    .gold-border {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 2px solid #D4AF37;
+      pointer-events: none;
+    }
+    
+    .university-header {
+      text-align: center;
+      margin-bottom: 8mm;
+      border-bottom: 3px solid #8B4513;
+      padding-bottom: 4mm;
+    }
+    
+    .university-name {
+      font-size: 20pt;
+      font-weight: bold;
+      color: #8B4513;
+      margin-bottom: 2mm;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.2;
+    }
+    
+    .university-address {
+      font-size: 12pt;
+      color: #8B4513;
+      font-weight: normal;
+      line-height: 1.2;
+    }
+    
+    .certificate-title {
+      text-align: center;
+      margin: 10mm 0;
+    }
+    
+    .certificate-main-title {
+      font-size: 32pt;
+      font-weight: bold;
+      color: #8B4513;
+      margin-bottom: 3mm;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      line-height: 1.1;
+    }
+    
+    .certificate-subtitle {
+      font-size: 18pt;
+      color: #D4AF37;
+      font-weight: normal;
+      margin-bottom: 2mm;
+      line-height: 1.1;
+    }
+    
+    .event-title {
+      font-size: 14pt;
+      color: #8B4513;
+      font-weight: bold;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+    
+    .certificate-body {
+      margin: 8mm 0;
+      line-height: 1.6;
+    }
+    
+    .certificate-text {
+      font-size: 12pt;
+      color: #5D4037;
+      margin-bottom: 6mm;
+      text-align: center;
+      line-height: 1.5;
+    }
+    
+    .highlight-name {
+      font-size: 14pt;
+      font-weight: bold;
+      color: #8B4513;
+      text-transform: uppercase;
+    }
+    
+    .highlight-event {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #8B4513;
+    }
+    
+    .highlight-organization {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #8B4513;
+    }
+    
+    .highlight-date {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #8B4513;
+    }
+    
+    .wishes-text {
+      font-size: 11pt;
+      color: #5D4037;
+      margin-top: 6mm;
+      text-align: center;
+      font-style: italic;
+      line-height: 1.4;
+    }
+    
+    .certificate-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12mm;
+      padding-top: 6mm;
+    }
+    
+    .signature-box {
+      text-align: center;
+      width: 60mm;
+      position: relative;
+    }
+    
+    .signature-line {
+      border-top: 2px solid #8B4513;
+      margin-top: 40px;
+      width: 100%;
+    }
+    
+    .signature-name {
+      margin-top: 8px;
+      font-weight: bold;
+      color: #8B4513;
+      font-size: 10pt;
+    }
+    
+    .signature-title {
+      color: #5D4037;
+      font-size: 9pt;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+    
+    .university-seal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.08;
+      font-size: 120px;
+      color: #8B4513;
+      font-weight: bold;
+    }
+    
+    .action-buttons-container {
+      text-align: center;
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .btn-gold {
+      background: linear-gradient(135deg, #D4AF37, #F7EF8A);
+      border: none;
+      color: #8B4513;
+      font-weight: 600;
+      padding: 12px 25px;
+      margin: 0 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    
+    .btn-outline-gold {
+      color: #D4AF37;
+      border: 2px solid #D4AF37;
+      background: transparent;
+      font-weight: 600;
+      padding: 12px 25px;
+      margin: 0 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+      color: #8B4513;
+    }
+
+    .btn-outline-gold:hover {
+      background: #D4AF37;
+      color: #8B4513;
+      transform: translateY(-2px);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+        margin: 0;
+      }
+      .certificate-container {
+        box-shadow: none;
+        border: 15px double #8B4513;
+        margin: 0;
+        padding: 15mm;
+        width: 280mm;
+        height: 190mm;
+      }
+      .action-buttons-container {
+        display: none;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      body {
+        padding: 10px;
+      }
+      .certificate-container {
+        width: 100%;
+        height: auto;
+        padding: 10mm;
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Certificate Container -->
+<div class="certificate-container">
+  <div class="gold-border"></div>
+  <div class="university-seal">SRMU</div>
+  
+  <!-- University Header -->
+  <div class="university-header">
+    <div class="university-name">SHRI RAMSWAROOP MEMORIAL UNIVERSITY</div>
+    <div class="university-address">LUCKNOW-DEVA ROAD, BARABANKI</div>
+  </div>
+  
+  <!-- Certificate Title -->
+  <div class="certificate-title">
+    <div class="certificate-main-title">CERTIFICATE</div>
+    <div class="certificate-subtitle">of Achievement</div>
+    <div class="event-title">{{ event.title }}</div>
+  </div>
+  
+  <!-- Certificate Body Text -->
+  <div class="certificate-body">
+    <div class="certificate-text">
+      This is to certify that <span class="highlight-name">{{ user.get_full_name|default:user.username }}</span> has successfully participated and demonstrated exceptional enthusiasm in the event <span class="highlight-event">"{{ event.title }}"</span> organized by <span class="highlight-organization">{{ event.society|default:"Club Nest" }}</span> at Shri Ramswaroop Memorial University held on <span class="highlight-date">{{ event.date|date:"jS F, Y" }}</span>. The participant showcased remarkable dedication and active involvement throughout the event, contributing significantly to its success.
+    </div>
+    
+    <div class="wishes-text">
+      We extend our heartfelt congratulations and wish continued success in all future academic and professional pursuits. May this achievement be a stepping stone to greater accomplishments.
+    </div>
+  </div>
+  
+  <!-- Signatures -->
+  <div class="certificate-footer">
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-name">Dr. Manoj Bhardwaj</div>
+      <div class="signature-title">Faculty Coordinator</div>
+      <div class="signature-title">Tech Nation Club</div>
+    </div>
+    
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-name">Dr. Veena Singh</div>
+      <div class="signature-title">IIC President</div>
+      <div class="signature-title">SRMU</div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="action-buttons-container">
+  <a href="{% url 'generate_certificate' participation.id %}" class="btn-gold" target="_blank">
+    <i class="bi bi-download"></i> Download Certificate (PDF)
+  </a>
+  
+  <a href="{% url 'events_page' %}" class="btn-outline-gold">
+    <i class="bi bi-arrow-left"></i> Back to Events
+  </a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -208,17 +208,141 @@ from django.shortcuts import render
 from .models import Event
 import datetime
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Event, Participation
+from datetime import date
+
+
+from datetime import date
+from django.shortcuts import render
+from .models import Event, Participation
+
+from datetime import date
+from django.shortcuts import render
+from .models import Event, Participation
+
 def events_page(request):
-    category = request.GET.get("category", "")
-    today = request.GET.get("today", "")
-
     events = Event.objects.all()
+    today = date.today()
+    user = request.user if request.user.is_authenticated else None  # AnonymousUser safe
 
-    if category:
-        events = events.filter(category=category)
-    if today:
-        today_date = datetime.date.today()
-        events = events.filter(date=today_date)
+    events_status = []
+    for event in events:
+        joined = False
+        attended = False
+        participation_id = None
 
-    return render(request, "events_page.html", {"events": events})
+        if user:
+            joined = Participation.objects.filter(event=event, user=user).exists()
+            if event.date < today and joined:
+                try:
+                    p = Participation.objects.get(event=event, user=user)
+                    attended = True
+                    participation_id = p.id
+                except Participation.DoesNotExist:
+                    attended = False
+                    participation_id = None
 
+        events_status.append({
+            'event': event,
+            'joined': joined,
+            'attended': attended,
+            'participation_id': participation_id
+        })
+
+    return render(request, 'events.html', {
+        'events_status': events_status,
+        'today': today
+    })
+
+
+
+# Join Event
+def join_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    user = request.user
+
+    participation, created = Participation.objects.get_or_create(user=user, event=event, defaults={'attended': True})
+
+    if created:
+        messages.success(
+            request,
+            "You have successfully joined the event! After the event finishes, you can download your certificate."
+        )
+    else:
+        messages.info(request, "You have already joined this event.")
+
+    return redirect('events_page')
+
+
+# Certificate download view
+from django.http import FileResponse
+from .utils import generate_certificate
+from .models import Certificate
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Participation, Certificate, Event
+from django.utils import timezone
+
+
+@login_required
+def view_certificate(request, participation_id):
+    # শুধুমাত্র logged-in user এর participation এবং attended event
+    participation = get_object_or_404(
+        Participation,
+        id=participation_id,
+        user=request.user,
+        attended=True
+    )
+
+    # Certificate exists কিনা চেক করুন, না থাকলে create করুন
+    certificate, created = Certificate.objects.get_or_create(
+        participation=participation,
+        defaults={
+            'issued_at': timezone.now()
+        }
+    )
+
+    context = {
+        "participation": participation,
+        "certificate": certificate,
+        "event": participation.event,
+        "user": request.user
+    }
+    return render(request, "my_certificate.html", context)
+
+
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Participation
+
+
+@login_required
+def generate_certificate_view(request, participation_id):
+    participation = get_object_or_404(
+        Participation,
+        id=participation_id,
+        user=request.user,
+        attended=True
+    )
+
+    context = {
+        "event": participation.event,
+        "user": request.user
+    }
+
+    html_string = render_to_string('certificate_pdf.html', context)
+
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"certificate_{participation.event.title}_{request.user.username}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    # Create PDF - no error handling
+    from xhtml2pdf import pisa
+    pisa.CreatePDF(html_string, dest=response)
+
+    return response

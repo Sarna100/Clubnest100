@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if valid %}
+    <div class="alert alert-success">✅ Valid certificate</div>
+    <h4>Student: {{ cert.participation.user.get_full_name|default:cert.participation.user.username }}</h4>
+    <p>Event: {{ cert.participation.event.title }}</p>
+    <p>Issued at: {{ cert.issued_at }}</p>
+    {% if cert.pdf %}
+      <p><a href="{{ cert.pdf.url }}" target="_blank">View / Download PDF</a></p>
+      <iframe src="{{ cert.pdf.url }}" style="width:100%;height:600px;border:0;"></iframe>
+    {% endif %}
+  {% else %}
+    <div class="alert alert-danger">❌ Invalid or not found</div>
+  {% endif %}
+{% endblock %}

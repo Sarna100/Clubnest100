@@ -20,4 +20,11 @@ urlpatterns = [
     path('clubs/<slug:slug>/', views.club_detail, name='club_detail'),
 
     path('events/', views.events_page, name="events_page"),
+
+
+path('events/', views.events_page, name='events_page'),
+    path('join_event/<int:event_id>/', views.join_event, name='join_event'),
+    path('certificate/<int:participation_id>/', views.view_certificate, name='view_certificate'),
+    path('certificate/<int:participation_id>/download/', views.generate_certificate_view, name='generate_certificate'),
+
 ]

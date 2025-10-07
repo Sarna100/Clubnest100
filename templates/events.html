@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Club Nest - Events</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to bottom, #f5f7fa, #e4e9f0);
+      font-family: 'Arial', sans-serif;
+      padding-top: 40px;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #4b2e83;
+    }
+
+    .event-card {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+      background: #ffffff;
+    }
+    .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+    }
+
+    .event-image {
+      height: 220px;
+      object-fit: cover;
+      width: 100%;
+      border-bottom: 3px solid #4b2e83;
+    }
+
+    .card-body {
+      padding: 25px;
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #3a1f6b;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      font-size: 1rem;
+      color: #555555;
+      margin-bottom: 15px;
+    }
+
+    .event-icons p {
+      font-size: 0.95rem;
+      color: #777777;
+      margin: 5px 0;
+    }
+
+    .btn-dark {
+      background-color: #4b2e83;
+      border-color: #4b2e83;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 8px 20px;
+    }
+    .btn-dark:hover {
+      background-color: #351f5a;
+      border-color: #351f5a;
+    }
+
+    .btn-primary {
+      background-color: #2575fc;
+      border-color: #2575fc;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 8px 20px;
+    }
+    .btn-primary:hover {
+      background-color: #1a55c2;
+      border-color: #1a55c2;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 8px 20px;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #218838;
+    }
+
+    /* Toast style */
+    .toast {
+      min-width: 300px;
+      max-width: 400px;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 12px;
+    }
+
+    /* Certificate Preview Styles */
+    .certificate-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .certificate-border {
+      border: 15px double #4b2e83;
+      padding: 30px;
+      position: relative;
+    }
+    
+    .certificate-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .certificate-title {
+      font-size: 2.5rem;
+      color: #4b2e83;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .certificate-subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .certificate-body {
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    .certificate-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .recipient-name {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4b2e83;
+      margin: 20px 0;
+      padding: 10px;
+      border-bottom: 2px solid #4b2e83;
+      display: inline-block;
+    }
+    
+    .certificate-details {
+      margin: 30px 0;
+      text-align: left;
+    }
+    
+    .detail-item {
+      margin-bottom: 10px;
+      display: flex;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      width: 150px;
+    }
+    
+    .certificate-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+    
+    .signature-box {
+      text-align: center;
+      width: 200px;
+    }
+    
+    .signature-line {
+      border-top: 1px solid #333;
+      margin-top: 60px;
+      width: 100%;
+    }
+    
+    .signature-name {
+      margin-top: 5px;
+      font-weight: 600;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      h2 { font-size: 2rem; }
+      .card-title { font-size: 1.4rem; }
+      .event-image { height: 180px; }
+      .certificate-container { padding: 20px; }
+      .certificate-border { padding: 15px; }
+      .certificate-title { font-size: 1.8rem; }
+      .recipient-name { font-size: 1.5rem; }
+      .certificate-footer { flex-direction: column; }
+      .signature-box { width: 100%; margin-bottom: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2 class="text-center mb-5">Discover Events</h2>
+
+  <!-- Toast Messages -->
+  {% if messages %}
+    <div class="position-fixed top-20 start-50 translate-middle-x" style="z-index: 1055;">
+      {% for message in messages %}
+        <div class="toast align-items-center text-white bg-primary border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body text-center">{{ message }}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="row g-4 justify-content-center">
+    {% for es in events_status %}
+    {% with event=es.event %}
+    <div class="col-lg-4 col-md-6">
+      <div class="card event-card">
+        {% if event.image %}
+          <img src="{{ event.image.url }}" class="event-image" alt="{{ event.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ event.title }}</h5>
+          {% if event.society %}
+            <p class="text-muted">{{ event.society }}</p>
+          {% endif %}
+          <p class="card-text">{{ event.description|truncatewords:25 }}</p>
+          <div class="event-icons mb-3">
+            <p><i class="bi bi-calendar-event"></i> <b>{{ event.date }}</b> • <i class="bi bi-clock"></i> {{ event.time }}</p>
+            <p><i class="bi bi-geo-alt"></i> {{ event.location }}</p>
+            <p><i class="bi bi-people"></i> {{ event.attendees }} attending</p>
+          </div>
+
+          {% if request.user.is_authenticated %}
+            {% if event.date >= today %}
+              {% if not es.joined %}
+                <a href="{% url 'join_event' event.id %}" class="btn btn-dark">Join Event</a>
+              {% else %}
+                <span class="badge bg-success p-2">Joined</span>
+              {% endif %}
+            {% else %}
+              {% if es.attended %}
+    <a href="{% url 'view_certificate' es.participation_id %}" class="btn btn-success">Show Certificate</a>
+{% else %}
+    <span class="badge bg-secondary p-2">You did not attend</span>
+{% endif %}
+            {% endif %}
+          {% else %}
+            <a href="{% url 'signin' %}" class="btn btn-dark">Login to Join</a>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+    {% empty %}
+      <p class="text-center">No events available.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Enable manual-close toasts (user can click X to close)
+  var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+  toastElList.map(function(toastEl) {
+    return new bootstrap.Toast(toastEl, { autohide: false }).show()  // user closes manually
+  })
+</script>
+
+</body>
+</html>
