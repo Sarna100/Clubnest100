@@ -165,12 +165,30 @@ def club_detail(request, slug):
 
 
 # ---------- EVENTS ----------
+from datetime import date
+from django.shortcuts import render
+from .models import Event, Participation
+
+from datetime import date
+from django.shortcuts import render
+from .models import Event, Participation
+
 def events_page(request):
     today = date.today()
-    events = Event.objects.all()
     user = request.user if request.user.is_authenticated else None
 
+    # 🔍 সার্চ কিওয়ার্ড নেওয়া হচ্ছে
+    query = request.GET.get('q', '').strip()
+
+    # 🔎 যদি ইউজার সার্চ করে, তাহলে সেই ক্লাবের ইভেন্টগুলো দেখানো হবে
+    if query:
+        events = Event.objects.filter(club__name__icontains=query)
+    else:
+        events = Event.objects.all()
+
     events_status = []
+
+    # 🧩 প্রতিটি ইভেন্টের জন্য স্ট্যাটাস নির্ধারণ
     for event in events:
         joined = attended = False
         participation_id = None
@@ -190,10 +208,14 @@ def events_page(request):
             'participation_id': participation_id
         })
 
+    # 🎯 টেমপ্লেটে পাঠানো হচ্ছে
     return render(request, 'events.html', {
         'events_status': events_status,
-        'today': today
+        'today': today,
+        'query': query,   # search input এর জন্য পাঠানো
     })
+
+
 
 
 @login_required
