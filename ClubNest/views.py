@@ -238,10 +238,20 @@ def view_certificate(request, participation_id):
         "user": request.user
     })
 
+
 @login_required
 def generate_certificate_view(request, participation_id):
-    from django.template.loader import render_to_string
-    from xhtml2pdf import pisa
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import letter, landscape
+    from reportlab.lib.units import inch
+    from reportlab.lib import colors
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.platypus import Paragraph, Frame
+    from reportlab.lib.styles import ParagraphStyle
+    from django.http import HttpResponse
+    from django.shortcuts import get_object_or_404
+    import io, os
 
     participation = get_object_or_404(
         Participation,
@@ -250,18 +260,126 @@ def generate_certificate_view(request, participation_id):
         attended=True
     )
 
-    context = {
-        "event": participation.event,
-        "user": request.user
-    }
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=landscape(letter))
+    width, height = landscape(letter)
 
-    html_string = render_to_string('certificate_pdf.html', context)
+    # === Font Registration ===
+    arial_path = "C:/Windows/Fonts/arial.ttf"
+    if os.path.exists(arial_path):
+        pdfmetrics.registerFont(TTFont('Arial', arial_path))
+        font_name = 'Arial'
+    else:
+        font_name = 'Helvetica'
+
+    # === Background ===
+    p.setFillColorRGB(1, 0.98, 0.94)
+    p.rect(0, 0, width, height, fill=1)
+
+    # === Border ===
+    p.setLineWidth(15)
+    p.setStrokeColorRGB(0.55, 0.27, 0.07)
+    p.rect(0.5 * inch, 0.5 * inch, width - 1 * inch, height - 1 * inch, fill=0)
+
+    # === Watermark ===
+    p.saveState()
+    p.setFillColorRGB(0.8, 0.7, 0.4)
+    p.setFont("Helvetica-Bold", 120)
+    p.setFillAlpha(0.06)
+    p.drawCentredString(width / 2, height / 2, "UAP")
+    p.restoreState()
+
+    # === Header ===
+    p.setFillColor(colors.HexColor("#8B4513"))
+    p.setFillColorRGB(0.36, 0.25, 0.20)
+    p.setFont("Helvetica-Bold", 24)
+    p.drawCentredString(width / 2, height - 1.8 * inch, "UNIVERSITY OF ASIA PACIFIC")
+
+    p.setFont("Helvetica", 14)
+    p.drawCentredString(width / 2, height - 2.3 * inch, "74/A, Green Road, Farmgate,Dhaka-1205, Bangladesh")
+
+    p.setLineWidth(3)
+    p.line(1 * inch, height - 2.7 * inch, width - 1 * inch, height - 2.7 * inch)
+
+    # === Certificate Title ===
+    p.setFillColor(colors.HexColor("#8B4513"))
+    p.setFont("Helvetica-Bold", 36)
+    p.setFillColor(colors.HexColor("#8B4513"))
+    p.drawCentredString(width / 2, height - 3.5 * inch, "CERTIFICATE")
+
+    p.setFont("Helvetica", 20)
+    p.setFillColor(colors.darkgoldenrod)
+    p.drawCentredString(width / 2, height - 4.0 * inch, "of Achievement")
+
+    # === Event Title ===
+    p.setFont("Helvetica-Bold", 16)
+    p.setFillColor(colors.brown)
+    event_title = str(participation.event.title)
+
+
+    # === Paragraph Style ===
+    style = ParagraphStyle(
+        name='Normal',
+        fontName=font_name,
+        fontSize=13,
+        leading=18,
+        alignment=1,  # center
+        textColor=colors.HexColor("#5D4037"),
+    )
+
+    # === Certificate Body Text ===
+    user_name = str(participation.user.get_full_name() or participation.user.username)
+    event_society = str(participation.event.society or "Club Nest")
+    event_date = participation.event.date.strftime("%B %d, %Y")
+
+    certificate_text = f"""
+    This is to certify that <font color="#8B4513"><b>{user_name.upper()}</b></font> has successfully participated and demonstrated exceptional enthusiasm in the event <font color="#8B4513"> <b>{event_title}</b> </font>organized by <font color="#8B4513"> <b>{event_society}</b></font> at the University of Asia Pacific, held on <font color="#8B4513"> <b>{event_date}</b></font>. 
+    <br/><br/>
+    <i>We extend our heartfelt congratulations and wish continued success in all future academic and professional pursuits. May this achievement be a stepping stone to greater accomplishments.</i>
+    """
+
+    # === Paragraph Frame (Below title, above signatures) ===
+    frame_top = height -  4.3  * inch
+    frame_height = 2.7 * inch
+
+    frame = Frame(
+        1.3 * inch,  # left margin
+        frame_top - frame_height,  # bottom Y
+        width - 2.6 * inch,  # width
+        frame_height,  # height
+        showBoundary=0
+    )
+    paragraph = Paragraph(certificate_text, style)
+    frame.addFromList([paragraph], p)
+
+    # === Signatures ===
+    p.setLineWidth(2)
+    p.setFont("Helvetica", 12)
+
+    # Left Signature
+    p.line(1.5 * inch, 1.8 * inch, 3.5 * inch, 1.8 * inch)
+    p.drawCentredString(2.5 * inch, 1.6 * inch, "Dr. Manoj Bhardwaj")
+    p.setFont("Helvetica", 11)
+    p.drawCentredString(2.5 * inch, 1.45 * inch, "Faculty Coordinator")
+    p.drawCentredString(2.5 * inch, 1.3 * inch, "Tech Nation Club")
+
+    # Right Signature
+    p.setFont("Helvetica", 12)
+    p.line(width - 3.5 * inch, 1.8 * inch, width - 1.5 * inch, 1.8 * inch)
+    p.drawCentredString(width - 2.5 * inch, 1.6 * inch, "Dr. Veena Singh")
+    p.setFont("Helvetica", 11)
+    p.drawCentredString(width - 2.5 * inch, 1.45 * inch, "IIC President")
+    p.drawCentredString(width - 2.5 * inch, 1.3 * inch, "UAP")
+
+    # === Finalize PDF ===
+    p.save()
+    pdf = buffer.getvalue()
+    buffer.close()
 
     response = HttpResponse(content_type='application/pdf')
-    filename = f"certificate_{participation.event.title}_{request.user.username}.pdf"
+    filename = f"certificate_{participation.event.title}_{participation.user.username}.pdf"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
-    pisa.CreatePDF(html_string, dest=response)
+    response.write(pdf)
     return response
 
 

@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate of Achievement - UAP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e6d5b8 0%, #f7f3e9 100%);
+      font-family: 'Times New Roman', serif;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .certificate-container {
+      width: 280mm;
+      height: 190mm;
+      background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
+      margin: 0 auto 20px auto;
+      padding: 15mm;
+      position: relative;
+      border: 15px double #8B4513;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    }
+
+    .gold-border {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 2px solid #D4AF37;
+      pointer-events: none;
+    }
+
+    .university-seal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.07;
+      font-size: 120px;
+      color: #8B4513;
+      font-weight: bold;
+      letter-spacing: 5px;
+    }
+
+    .university-header {
+      text-align: center;
+      margin-bottom: 8mm;
+      border-bottom: 3px solid #8B4513;
+      padding-bottom: 4mm;
+    }
+
+    .university-name {
+      font-size: 22pt;
+      font-weight: bold;
+      color: #8B4513;
+      text-transform: uppercase;
+    }
+
+    .university-address {
+      font-size: 12pt;
+      color: #5D4037;
+      margin-top: 3px;
+    }
+
+    .certificate-title {
+      text-align: center;
+      margin: 10mm 0;
+    }
+
+    .certificate-main-title {
+      font-size: 34pt;
+      font-weight: bold;
+      color: #8B4513;
+      letter-spacing: 3px;
+      margin-bottom: 2mm;
+    }
+
+    .certificate-subtitle {
+      font-size: 18pt;
+      color: #D4AF37;
+      margin-bottom: 4mm;
+    }
+
+    .event-title {
+      font-size: 14pt;
+      color: #8B4513;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .certificate-body {
+      margin: 8mm 0;
+      line-height: 1.7;
+    }
+
+    .certificate-text {
+      font-size: 13pt;
+      color: #5D4037;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .highlight-name {
+      font-size: 14pt;
+      font-weight: bold;
+      color: #8B4513;
+      text-transform: uppercase;
+    }
+
+    .highlight-event, .highlight-organization, .highlight-date {
+      font-weight: bold;
+      color: #8B4513;
+    }
+
+    .wishes-text {
+      font-size: 12pt;
+      color: #5D4037;
+      margin-top: 10mm;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .certificate-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12mm;
+      padding-top: 6mm;
+    }
+
+    .signature-box {
+      text-align: center;
+      width: 60mm;
+    }
+
+    .signature-line {
+      border-top: 2px solid #8B4513;
+      margin-top: 40px;
+    }
+
+    .signature-name {
+      margin-top: 8px;
+      font-weight: bold;
+      color: #8B4513;
+    }
+
+    .signature-title {
+      color: #5D4037;
+      font-size: 10pt;
+      line-height: 1.2;
+    }
+
+    .action-buttons-container {
+      text-align: center;
+      margin-top: 25px;
+      padding: 15px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #D4AF37, #F7EF8A);
+      border: none;
+      color: #8B4513;
+      font-weight: 600;
+      padding: 12px 25px;
+      margin: 0 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-outline-gold {
+      color: #D4AF37;
+      border: 2px solid #D4AF37;
+      background: transparent;
+      font-weight: 600;
+      padding: 12px 25px;
+      margin: 0 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .btn-outline-gold:hover {
+      background: #D4AF37;
+      color: #8B4513;
+      transform: translateY(-2px);
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      .certificate-container {
+        box-shadow: none;
+        margin: 0;
+      }
+      .action-buttons-container {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="certificate-container">
+  <div class="gold-border"></div>
+  <div class="university-seal">UAP</div>
+
+  <div class="university-header">
+    <div class="university-name">University of Asia Pacific</div>
+    <div class="university-address">LUCKNOW-DEVA ROAD, BARABANKI</div>
+  </div>
+
+  <div class="certificate-title">
+    <div class="certificate-main-title">CERTIFICATE</div>
+    <div class="certificate-subtitle">of Achievement</div>
+    <div class="event-title">{{ event.title }}</div>
+  </div>
+
+  <div class="certificate-body">
+    <div class="certificate-text">
+      This is to certify that
+      <span class="highlight-name">{{ user.get_full_name|default:user.username }}</span>
+      has successfully participated and demonstrated exceptional enthusiasm
+      in the event <span class="highlight-event">"{{ event.title }}"</span>,
+      organized by <span class="highlight-organization">{{ event.society|default:"Club Nest" }}</span>,
+      held at University of Asia Pacific on
+      <span class="highlight-date">{{ event.date|date:"jS F, Y" }}</span>.
+      The participant showcased remarkable dedication and active involvement,
+      contributing significantly to the event’s success.
+    </div>
+
+    <div class="wishes-text">
+      We extend our heartfelt congratulations and wish continued success in all future academic and professional pursuits.
+      May this achievement be a stepping stone to greater accomplishments.
+    </div>
+  </div>
+
+  <div class="certificate-footer">
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-name">Dr. Manoj Bhardwaj</div>
+      <div class="signature-title">Faculty Coordinator</div>
+      <div class="signature-title">Tech Nation Club</div>
+    </div>
+
+    <div class="signature-box">
+      <div class="signature-line"></div>
+      <div class="signature-name">Dr. Veena Singh</div>
+      <div class="signature-title">IIC President</div>
+      <div class="signature-title">UAP</div>
+    </div>
+  </div>
+</div>
+
+<div class="action-buttons-container">
+  <a href="{% url 'generate_certificate' participation.id %}" class="btn-gold" target="_blank">
+    <i class="bi bi-download"></i> Download Certificate (PDF)
+  </a>
+  <a href="{% url 'events_page' %}" class="btn-outline-gold">
+    <i class="bi bi-arrow-left"></i> Back to Events
+  </a>
+</div>
+
+</body>
+</html>
