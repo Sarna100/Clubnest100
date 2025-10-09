@@ -27,4 +27,7 @@ path('events/', views.events_page, name='events_page'),
     path('certificate/<int:participation_id>/', views.view_certificate, name='view_certificate'),
     path('certificate/<int:participation_id>/download/', views.generate_certificate_view, name='generate_certificate'),
 
+ path('sponsors/', views.sponsor_list, name='sponsor_list'),
+
+
 ]

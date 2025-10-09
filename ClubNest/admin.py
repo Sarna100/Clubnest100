@@ -67,3 +67,24 @@ class ParticipationAdmin(admin.ModelAdmin):
 class CertificateAdmin(admin.ModelAdmin):
     list_display = ('participation', 'unique_id', 'issued_at')
     search_fields = ('participation__user__username', 'participation__event__title')
+
+
+from django.contrib import admin
+from .models import Sponsor
+
+@admin.register(Sponsor)
+class SponsorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'priority', 'is_active', 'website_link_display')
+    list_filter = ('is_active',)
+    search_fields = ('name',)
+    ordering = ('priority', 'name')
+    list_editable = ('priority', 'is_active')
+
+    def website_link_display(self, obj):
+        """Show clickable link in admin list view."""
+        if obj.website_link:
+            return f'<a href="{obj.website_link}" target="_blank">{obj.website_link}</a>'
+        return "-"
+    website_link_display.allow_tags = True
+    website_link_display.short_description = "Website Link"
+
