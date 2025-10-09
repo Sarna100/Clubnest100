@@ -11,12 +11,16 @@
     <style>
         :root {
             --primary-color: #5d3596;
+            --primary-light: #7a52a3;
+            --primary-lighter: #eee4ff;
             --secondary-color: #f7f7f7;
             --text-dark: #333;
             --text-light: #fff;
             --card-bg-light: #eee4ff;
             --card-bg-dark: #7a52a3;
             --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
         }
 
         * {
@@ -37,6 +41,9 @@
             color: var(--text-light);
             padding: 1.5rem 0;
             box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .nav-container {
@@ -54,14 +61,19 @@
         }
 
         .logo img {
-            height: 40px; /* Logo height */
+            height: 40px;
             margin-right: 10px;
         }
 
         .logo span {
-            font-size: 1.8rem; /* Increased font size for better look */
+            font-size: 1.8rem;
             font-weight: 700;
-            font-family: 'Montserrat', sans-serif; /* New font for design */
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
         }
 
         .nav-links a {
@@ -70,22 +82,117 @@
             margin: 0 1rem;
             padding-bottom: 5px;
             transition: border-bottom 0.3s ease;
+            position: relative;
         }
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            border-bottom: 2px solid var(--text-light);
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--text-light);
+            transition: width 0.3s ease;
         }
 
-        .profile-icon i {
-            font-size: 2rem;
+        .nav-links a:hover:after,
+        .nav-links a.active:after {
+            width: 100%;
+        }
+
+        /* Dropdown styles */
+        .nav-links .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nav-links .dropbtn {
             color: var(--text-light);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding-bottom: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links .dropbtn i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links .dropdown:hover .dropbtn i {
+            transform: rotate(180deg);
+        }
+
+        .nav-links .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f7f7f7;
+            min-width: 160px;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            z-index: 1;
+            top: 100%;
+            overflow: hidden;
+        }
+
+        .nav-links .dropdown-content a {
+            color: var(--text-dark);
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links .dropdown-content a:hover {
+            background-color: #e0d8f5;
+        }
+
+        .nav-links .dropdown:hover .dropdown-content {
+            display: block;
         }
 
         .main-content {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 2rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: var(--text-light);
+            padding: 4rem 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
         }
 
         .about-section {
@@ -102,24 +209,39 @@
         .about-text-container h2 {
             font-size: 2.5rem;
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .about-text-container h2:after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+            bottom: 0;
+            left: 0;
+            border-radius: 2px;
         }
 
         .about-text-container h4 {
             color: var(--primary-color);
             text-transform: uppercase;
             margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
         }
 
         .about-text-container p {
             font-size: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            gap: 1.5rem;
             flex: 1;
         }
 
@@ -127,8 +249,14 @@
             background-color: var(--card-bg-light);
             padding: 2rem;
             text-align: center;
-            border-radius: 15px;
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
 
         .stat-card i {
@@ -138,8 +266,14 @@
         }
 
         .stat-card h3 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-weight: 600;
+            color: var(--text-dark);
         }
 
         .what-we-offer-section {
@@ -147,15 +281,22 @@
             margin-bottom: 4rem;
         }
 
-        .what-we-offer-section h4 {
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-header h4 {
             font-size: 1.5rem;
             color: var(--primary-color);
             margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .what-we-offer-section p {
+        .section-header p {
             max-width: 700px;
-            margin: 0 auto 2rem;
+            margin: 0 auto;
+            font-size: 1.1rem;
         }
 
         .offer-cards-grid {
@@ -167,19 +308,219 @@
         .offer-card {
             background-color: var(--card-bg-dark);
             color: var(--text-light);
-            padding: 2rem 1.5rem;
-            border-radius: 15px;
+            padding: 2.5rem 1.5rem;
+            border-radius: var(--border-radius);
             text-align: center;
             box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
         }
 
         .offer-card i {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-lighter);
         }
 
         .offer-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .offer-card p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .mission-vision-section {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .mission-card, .vision-card {
+            flex: 1;
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .mission-card:hover, .vision-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .mission-card h3, .vision-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .mission-card h3 i, .vision-card h3 i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        .mission-card p, .vision-card p {
+            margin-bottom: 1rem;
+        }
+
+        .team-section {
+            margin-bottom: 4rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .team-member {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .member-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1.5rem;
+            border: 5px solid var(--primary-lighter);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .member-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .team-member:hover .member-image {
+            border-color: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .team-member:hover .member-image img {
+            transform: scale(1.1);
+        }
+
+        .member-info {
+            text-align: center;
+        }
+
+        .member-info h4 {
+            color: var(--primary-color);
             margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .member-info .position {
+            color: var(--primary-light);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .member-info .description {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .member-social {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .member-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: var(--primary-lighter);
+            color: var(--primary-color);
+            border-radius: 50%;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .member-social a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: var(--text-light);
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .cta-section h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--text-light);
+            color: var(--primary-color);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .cta-button:hover {
+            background-color: var(--primary-lighter);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        @media (max-width: 992px) {
+            .offer-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
@@ -190,24 +531,55 @@
 
             .nav-links {
                 margin-top: 1rem;
+                flex-direction: column;
+            }
+
+            .nav-links a, .nav-links .dropbtn {
+                margin: 0.5rem 0;
+            }
+
+            .hero-section h1 {
+                font-size: 2.5rem;
             }
 
             .about-section {
                 flex-direction: column;
             }
 
-            .offer-cards-grid {
+            .mission-vision-section {
+                flex-direction: column;
+            }
+
+            .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .member-image {
+                width: 150px;
+                height: 150px;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 576px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
 
             .offer-cards-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .member-image {
+                width: 140px;
+                height: 140px;
             }
         }
     </style>
@@ -217,25 +589,38 @@
     <header class="header">
         <div class="container nav-container">
             <div class="logo">
-               
-                <span>Club Nest</span> 
+                <span>Club Nest</span>
             </div>
             <nav class="nav-links">
-               <a href="{% url 'home' %}">Home</a>
-
+                <a href="{% url 'home' %}">Home</a>
                 <a href="#" class="active">About</a>
-                   <a href="{% url 'events_page' %}">Event</a>
-                <a href="{% url 'club_list' %}">club</a>
-               
+                <a href="{% url 'events_page' %}">Event</a>
+                <a href="{% url 'club_list' %}">Club</a>
+
+                <!-- More Dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="dropbtn">More <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="#">Gallery</a>
+                        <a href="#">Sponsors</a>
+                        <a href="#">Volunteers</a>
+                    </div>
+                </div>
             </nav>
-           
         </div>
     </header>
 
     <main class="main-content">
+        <section class="hero-section">
+            <h1>About Club Nest</h1>
+            <p>Connecting students with campus communities, one club at a time</p>
+        </section>
+
         <div class="about-section">
             <div class="about-text-container">
-                <h2>About Our Club</h2>
+                <h2>Our Story</h2>
+                <p>ClubNest was founded with a simple yet powerful vision: to bridge the gap between students and campus organizations. We believe that university life extends far beyond the classroom, and that the connections made through clubs and organizations can shape a student's entire college experience.</p>
+
                 <h4>Our Mission</h4>
                 <p>We are committed to creating an inclusive environment where students can develop leadership skills, pursue academic excellence, and build lasting relationships that extend beyond university life.</p>
                 <p>Through our diverse range of activities, workshops, and community service projects, we empower our members to become confident leaders and engaged citizens who make a positive impact in their communities.</p>
@@ -264,9 +649,24 @@
             </div>
         </div>
 
+        <div class="mission-vision-section">
+            <div class="mission-card">
+                <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+                <p>To create a vibrant, inclusive platform that connects students with campus organizations, fostering personal growth, leadership development, and lifelong connections.</p>
+                <p>We aim to make club discovery and participation accessible to every student, regardless of their background or interests.</p>
+            </div>
+            <div class="vision-card">
+                <h3><i class="fas fa-eye"></i> Our Vision</h3>
+                <p>To become the leading platform for campus engagement, transforming how students connect with extracurricular activities and building stronger campus communities nationwide.</p>
+                <p>We envision campuses where no student feels disconnected and every student finds their place to belong.</p>
+            </div>
+        </div>
+
         <div class="what-we-offer-section">
-            <h4>What We Offer</h4>
-            <p>ClubNest provides a comprehensive platform designed to enhance your university experience and strengthen campus communities.</p>
+            <div class="section-header">
+                <h4>What We Offer</h4>
+                <p>ClubNest provides a comprehensive platform designed to enhance your university experience and strengthen campus communities.</p>
+            </div>
             <div class="offer-cards-grid">
                 <div class="offer-card">
                     <i class="fas fa-calendar-check"></i>
@@ -284,11 +684,71 @@
                     <p>Help club organizers reach more students and boost attendance.</p>
                 </div>
                 <div class="offer-card">
-        <i class="fas fa-user-graduate"></i> <!-- ঠিক করা হয়েছে -->
-        <h3>Campus Engagement</h3>
-        <p>Strengthen your university experience through active participation.</p>
-    </div>
+                    <i class="fas fa-user-graduate"></i>
+                    <h3>Campus Engagement</h3>
+                    <p>Strengthen your university experience through active participation.</p>
+                </div>
             </div>
+        </div>
+
+        <div class="team-section">
+            <div class="section-header">
+                <h4>Meet Our Team</h4>
+                <p>The passionate individuals behind ClubNest who work tirelessly to improve campus life for students everywhere.</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-image">
+                       <img src="/media/about/bilas.jpg" alt="about">
+                    </div>
+                    <div class="member-info">
+                        <h4>Nure Al Saba Bilas </h4>
+                        <p class="position">Founder & CEO</p>
+                        <p class="description">Passionate about student engagement and community building.</p>
+                        <div class="member-social">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://www.facebook.com/nure.al.saba.bilas"><i class="fab fa-facebook"></i></a>
+                            <a href="https://github.com/bilas08"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-image">
+                      <img src="/media/about/jerin.jpg" alt="about">
+                    </div>
+                    <div class="member-info">
+                        <h4>Mst. Zerin Firdusi</h4>
+                        <p class="position">Community Manager</p>
+                        <p class="description">Connects students with the perfect clubs for their interests and organizes campus events.</p>
+                        <div class="member-social">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://www.facebook.com/share/1T6bBgJ1oB/"><i class="fab fa-facebook"></i></a>
+                            <a href="https://github.com/zerinfirdousi"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-image">
+                        <img src="/media/about/download (1).jpg" alt="about">
+                    </div>
+                    <div class="member-info">
+                        <h4>Sarna Rani Saha</h4>
+                        <p class="position">Technical Lead</p>
+                        <p class="description">Builds the technology that powers our platform and ensures seamless user experience.</p>
+                        <div class="member-social">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="https://github.com/Sarna100"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h3>Ready to Get Involved?</h3>
+            <p>Join ClubNest today and discover the perfect clubs and events for you. Connect with your campus community like never before.</p>
+            <a href="{% url 'club_list' %}" class="cta-button">Explore Clubs</a>
         </div>
     </main>
 
