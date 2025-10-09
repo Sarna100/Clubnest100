@@ -20,6 +20,8 @@ urlpatterns = [
     path('clubs/<slug:slug>/', views.club_detail, name='club_detail'),
 
     path('events/', views.events_page, name="events_page"),
+path('upcoming-events/', views.upcoming_events, name='upcoming_events'),
+
 
 
 path('events/', views.events_page, name='events_page'),

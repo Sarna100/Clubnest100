@@ -396,3 +396,36 @@ def sponsor_list(request):
         'page_title': "Our Sponsors & Partners"
     }
     return render(request, 'sponsor_list.html', context)
+from datetime import date
+from django.shortcuts import render
+from .models import Event, Participation
+
+def upcoming_events(request):
+    today = date.today()
+    user = request.user if request.user.is_authenticated else None
+
+    # আজ বা ভবিষ্যতের event গুলোই দেখাবে
+    events = Event.objects.filter(date__gte=today).order_by('date')
+
+    events_status = []
+
+    for event in events:
+        joined = attended = False
+        participation_id = None
+
+        if user:
+            joined = Participation.objects.filter(event=event, user=user).exists()
+
+        events_status.append({
+            'event': event,
+            'joined': joined,
+            'attended': attended,
+            'participation_id': participation_id
+        })
+
+    # ✅ একই template ব্যবহার করা হচ্ছে (events.html)
+    return render(request, 'events.html', {
+        'events_status': events_status,
+        'today': today,
+        'query': '',
+    })
