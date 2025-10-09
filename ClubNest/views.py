@@ -5,11 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 
 from .forms import UserForm, ProfileForm
-from .models import Profile, Club, Event, Participation, Certificate
-
+from .models import Profile, Club, Membership, Event, Participation, Certificate
 
 # ---------- BASIC PAGES ----------
 def home(request):
@@ -17,10 +16,8 @@ def home(request):
         Profile.objects.get_or_create(user=request.user)
     return render(request, 'home.html')
 
-
 def about_us(request):
     return render(request, 'about_us.html')
-
 
 # ---------- USER AUTH ----------
 def signup(request):
@@ -60,7 +57,6 @@ def signup(request):
 
     return render(request, "signup.html")
 
-
 def signin(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -72,18 +68,15 @@ def signin(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
-
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('home')
 
-
 # ---------- PROFILE ----------
 @login_required
 def profile(request):
     return render(request, 'profile.html')
-
 
 @login_required
 def edit_profile(request):
@@ -106,81 +99,74 @@ def edit_profile(request):
         'profile_form': profile_form,
     })
 
-
 # ---------- CLUB ----------
+# ClubNest/views.py - club_list function e change koro
 def club_list(request):
-    from django.db.models import Q
-    query = request.GET.get('q')
+    user = request.user if request.user.is_authenticated else None
+    query = request.GET.get('q', '').strip()
+
     if query:
         clubs = Club.objects.filter(
-            Q(name__icontains=query) |
-            Q(caption__icontains=query)
+            models.Q(name__icontains=query) |
+            models.Q(caption__icontains=query)
         )
     else:
         clubs = Club.objects.all()
-    return render(request, 'club_list.html', {'clubs': clubs})
+
+    clubs_with_status = []
+
+    for club in clubs:
+        membership = None
+        if user:
+            try:
+                # TRY-EXCEPT diye wrap koro
+                membership = Membership.objects.filter(club=club, profile__user=user).first()
+            except:
+                membership = None
+
+        clubs_with_status.append({
+            'club': club,
+            'membership': membership
+        })
+
+    return render(request, 'club_list.html', {'clubs_with_status': clubs_with_status})
 
 
+# ClubNest/views.py - join_club function
 @login_required
 def join_club(request, club_id):
     club = get_object_or_404(Club, id=club_id)
-    profile = request.user.profile
-    if club not in profile.clubs.all():
-        profile.clubs.add(club)
-        messages.success(request, f"Thank you for joining {club.name}!")
-    else:
-        messages.info(request, f"You are already a member of {club.name}.")
-    return redirect('club_detail', slug=club.slug)
+    profile, _ = Profile.objects.get_or_create(user=request.user)
 
+    try:
+        membership, created = Membership.objects.get_or_create(profile=profile, club=club)
 
-# ✅ UPDATED CLUB DETAIL:
-from datetime import date
-from django.shortcuts import render, get_object_or_404
-from .models import Club, Event
+        if not created:
+            if membership.is_approved:
+                messages.info(request, "You are already a member of this club.")
+            else:
+                messages.info(request, "Your join request is pending approval.")
+        else:
+            messages.success(request, "Join request sent! Please wait for admin approval.")
+    except Exception as e:
+        messages.error(request, "System is updating. Please try again later.")
 
-
-# views.py
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from .models import Club, Event
-
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from .models import Club, Event
-
+    return redirect('club_list')
 def club_detail(request, slug):
     club = get_object_or_404(Club, slug=slug)
-    today = timezone.now().date()
-
-
+    today = date.today()
     upcoming_events = Event.objects.filter(club=club, date__gte=today).order_by('date')
-
-    context = {
+    return render(request, 'club_detail.html', {
         'club': club,
-        'events': upcoming_events,
-    }
-    return render(request, 'club_detail.html', context)
-
-
-
+        'events': upcoming_events
+    })
 
 # ---------- EVENTS ----------
-from datetime import date
-from django.shortcuts import render
-from .models import Event, Participation
-
-from datetime import date
-from django.shortcuts import render
-from .models import Event, Participation
-
 def events_page(request):
     today = date.today()
     user = request.user if request.user.is_authenticated else None
-
-    # 🔍 সার্চ কিওয়ার্ড নেওয়া হচ্ছে
     query = request.GET.get('q', '').strip()
 
-    # 🔎 যদি ইউজার সার্চ করে, তাহলে সেই ক্লাবের ইভেন্টগুলো দেখানো হবে
     if query:
         events = Event.objects.filter(club__name__icontains=query)
     else:
@@ -188,7 +174,6 @@ def events_page(request):
 
     events_status = []
 
-    # 🧩 প্রতিটি ইভেন্টের জন্য স্ট্যাটাস নির্ধারণ
     for event in events:
         joined = attended = False
         participation_id = None
@@ -208,15 +193,11 @@ def events_page(request):
             'participation_id': participation_id
         })
 
-    # 🎯 টেমপ্লেটে পাঠানো হচ্ছে
     return render(request, 'events.html', {
         'events_status': events_status,
         'today': today,
-        'query': query,   # search input এর জন্য পাঠানো
+        'query': query
     })
-
-
-
 
 @login_required
 def join_event(request, event_id):
@@ -235,7 +216,6 @@ def join_event(request, event_id):
 
     return redirect('events_page')
 
-
 # ---------- CERTIFICATE ----------
 @login_required
 def view_certificate(request, participation_id):
@@ -251,14 +231,12 @@ def view_certificate(request, participation_id):
         defaults={'issued_at': date.today()}
     )
 
-    context = {
+    return render(request, "my_certificate.html", {
         "participation": participation,
         "certificate": certificate,
         "event": participation.event,
         "user": request.user
-    }
-    return render(request, "my_certificate.html", context)
-
+    })
 
 @login_required
 def generate_certificate_view(request, participation_id):

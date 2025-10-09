@@ -1,6 +1,4 @@
 {% load static %}
-{% load club_tags %} {# user_joined filter #}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Clubs | Club Nest</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
@@ -65,10 +61,9 @@
     }
     button[type="submit"]:hover { background: #956fd9; }
 
-    /* CLUBS GRID */
     #clubs-container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 30px;
       max-width: 1200px;
       margin: 0 auto 50px;
@@ -98,62 +93,22 @@
     .club img { width: 100%; height: 160px; object-fit: contain; border-radius: 8px; background: #ffffff; }
     .club p { font-size: 14px; color: #171515; text-align: justify; flex-grow: 1; }
 
-    button.join-btn, a.join-btn {
+    .join-btn {
       background-color: #5a189a;
       border: none;
       padding: 10px 22px;
       color: white;
-      cursor: pointer;
       border-radius: 25px;
       font-weight: 600;
       font-size: 14px;
+      text-decoration: none;
       transition: background-color 0.3s ease;
       box-shadow: 0 4px 10px rgb(141 76 190 / 0.5);
       margin-top: 15px;
-      align-self: center;
-      text-decoration: none;
       display: inline-block;
     }
+    .join-btn:hover { background-color: #c79eff; }
 
-    button.join-btn:hover, a.join-btn:hover { background-color: #c79eff; }
-
-    /* MESSAGE OVERLAY */
-    #message-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .message-box {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 12px;
-      text-align: center;
-      color: #171515;
-      font-size: 28px;
-      font-weight: 700;
-      box-shadow: 0 0 15px rgba(90, 24, 154, 0.7);
-      min-width: 300px;
-    }
-    #close-message {
-      margin-top: 25px;
-      padding: 10px 30px;
-      font-size: 18px;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      background-color: #171515;
-      color: white;
-      font-weight: 600;
-    }
-    #close-message:hover { background-color: #7d3cff; }
-
-    /* RESPONSIVE */
-    @media (max-width: 1024px) { #clubs-container { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { #clubs-container { grid-template-columns: repeat(1, 1fr); } }
   </style>
 </head>
 <body>
@@ -173,38 +128,33 @@
   </nav>
 </header>
 
-<div id="message-overlay">
-  <div class="message-box">
-    <p>Thank you for joining!</p>
-    <button id="close-message">Close</button>
-  </div>
-</div>
-
 <form method="get" action=".">
   <input type="search" name="q" placeholder="Search clubs" value="{{ request.GET.q|default_if_none:'' }}">
   <button type="submit">Search</button>
 </form>
 
 <div id="clubs-container">
-  {% for club in clubs %}
-    <div class="club" data-club-id="{{ club.id }}">
-      {% if club.logo %}
-        <img src="{{ club.logo.url }}" alt="{{ club.name }} Logo" />
+  {% for item in clubs_with_status %}
+    <div class="club">
+      {% if item.club.logo %}
+        <img src="{{ item.club.logo.url }}" alt="{{ item.club.name }} Logo" />
       {% endif %}
-      <h3>{{ club.name }}</h3>
-      <p>{{ club.caption }}</p>
+      <h3>{{ item.club.name }}</h3>
+      <p>{{ item.club.caption }}</p>
 
       {% if user.is_authenticated %}
-        {% if club|user_joined:user %}
-<a href="{% url 'club_detail' club.slug %}" class="join-btn" style="background-color:#28a745;">View Club</a>
-
+        {% if item.membership %}
+          {% if item.membership.is_approved %}
+            <a href="{% url 'club_detail' item.club.slug %}" class="join-btn" style="background-color:#28a745;">View Club</a>
+          {% else %}
+            <button class="join-btn" style="background-color:#ffc107; cursor:default;">Pending Approval</button>
+          {% endif %}
         {% else %}
-          <button class="join-btn" data-url="{% url 'join_club' club.id %}" data-club-id="{{ club.id }}">Join Club</button>
+          <button class="join-btn join" data-url="{% url 'join_club' item.club.id %}">Join Club</button>
         {% endif %}
       {% else %}
         <a href="{% url 'signin' %}" class="join-btn">Login to Join</a>
       {% endif %}
-
     </div>
   {% empty %}
     <p style="text-align:center; color:#bbb;">No clubs found.</p>
@@ -212,19 +162,12 @@
 </div>
 
 <script>
-  document.querySelectorAll('.join-btn').forEach(button => {
-    if(button.tagName.toLowerCase() === 'button'){
-      button.addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('message-overlay').style.display = 'flex';
-        const url = this.getAttribute('data-url');
-        setTimeout(() => { window.location.href = url; }, 2000);
-      });
-    }
-  });
-
-  document.getElementById('close-message').addEventListener('click', function() {
-    document.getElementById('message-overlay').style.display = 'none';
+  document.querySelectorAll('.join-btn.join').forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      alert("Join request sent! Please wait for admin approval.");
+      window.location.href = this.getAttribute('data-url');
+    });
   });
 </script>
 

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.conf import settings
 from django.shortcuts import render
+import uuid
 
 
 # ==============================
@@ -57,10 +58,27 @@ class Profile(models.Model):
         null=True
     )
 
-    clubs = models.ManyToManyField(Club, blank=True)
+    clubs = models.ManyToManyField('Club', through='Membership', blank=True)
 
     def __str__(self):
         return self.user.username
+
+
+# ==============================
+# Membership Model (Fixed)
+# ==============================
+class Membership(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)  # ✅ Added
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    is_approved = models.BooleanField(default=False)
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('profile', 'club')
+
+    def __str__(self):
+        status = "Approved" if self.is_approved else "Pending"
+        return f"{self.profile.user.username} - {self.club.name} ({status})"
 
 
 # ==============================
@@ -88,7 +106,6 @@ class Event(models.Model):
     attendees = models.PositiveIntegerField(default=0)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     image = models.ImageField(upload_to='event_images/')
-
     club = models.ForeignKey(Club, on_delete=models.CASCADE, blank=True, null=True, help_text="Event organizing club")
 
     def __str__(self):
@@ -110,14 +127,9 @@ class Participation(models.Model):
 # ==============================
 # Certificate Model
 # ==============================
-from django.db import models
-import uuid
-
-
 class Certificate(models.Model):
     participation = models.OneToOneField(Participation, on_delete=models.CASCADE)
     unique_id = models.CharField(max_length=100, null=True, blank=True)
-
     issued_at = models.DateTimeField(auto_now_add=True)
     pdf = models.FileField(upload_to='certificates/', null=True, blank=True)
 
@@ -126,9 +138,9 @@ class Certificate(models.Model):
 
 
 # ==============================
-# Optional: Home View
+# Optional Home View
 # ==============================
 def home(request):
     return render(request, 'home.html', {
         'image_url': settings.MEDIA_URL + '0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg'
-    })
+  })
