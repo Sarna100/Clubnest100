@@ -416,3 +416,21 @@ def upcoming_events(request):
         'query': '',
     })
 
+
+# sponsors/views.py
+
+from django.shortcuts import render
+from .models import Sponsor
+
+def sponsor_list(request):
+    # Retrieve only active sponsors, ordered by priority and then name
+    sponsors = Sponsor.objects.filter(is_active=True).order_by('priority', 'name')
+    context = {
+        'sponsors': sponsors,
+        'page_title': "Our Sponsors & Partners"
+    }
+    return render(request, 'sponsor_list.html', context)
+
+
+
+
