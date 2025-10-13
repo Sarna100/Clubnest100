@@ -144,26 +144,3 @@ def home(request):
     return render(request, 'home.html', {
         'image_url': settings.MEDIA_URL + '0bd7856b-f5ed-46f9-bf12-82f4d84246ea.jpg'
   })
-
-# sponsors/models.py (Assuming your app name is 'sponsors')
-
-from django.db import models
-
-class Sponsor(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Sponsor Name")
-    logo = models.ImageField(upload_to='sponsors/logos/', verbose_name="Logo")
-    description = models.TextField(blank=True, null=True, verbose_name="Description (About the Sponsor)")
-    clubs = models.ManyToManyField(Club, blank=True, related_name='sponsors')
-    website_link = models.URLField(blank=True, null=True, verbose_name="Website Link")
-    priority = models.IntegerField(default=0, verbose_name="Priority (Lower number appears first)")
-    is_active = models.BooleanField(default=True, verbose_name="Is Active")
-
-
-
-    class Meta:
-        verbose_name = "Sponsor / Partner"
-        verbose_name_plural = "Sponsors / Partners"
-        ordering = ['priority', 'name']
-
-    def __str__(self):
-        return self.name
