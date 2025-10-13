@@ -60,10 +60,42 @@
       margin-top: 30px;
     }
 
+    /* ====== Search Bar ====== */
+    .search-container {
+      max-width: 500px;
+      margin: 30px auto;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 45px 12px 20px;
+      border: 2px solid #4b2e83;
+      border-radius: 50px;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(75, 46, 131, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #a56eff;
+      box-shadow: 0 4px 20px rgba(75, 46, 131, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4b2e83;
+      font-size: 1.1rem;
+    }
+
     /* ====== Event Cards ====== */
     .row.g-4.justify-content-center > .col-lg-4,
     .row.g-4.justify-content-center > .col-md-6 {
-      display: flex; /* Make columns flex containers */
+      display: flex;
     }
 
     .event-card {
@@ -74,7 +106,7 @@
       background: #ffffff;
       display: flex;
       flex-direction: column;
-      flex: 1; /* all cards same height */
+      flex: 1;
     }
 
     .event-card:hover {
@@ -92,7 +124,7 @@
     .card-body {
       padding: 25px;
       text-align: center;
-      flex: 1; /* Take remaining space to keep all cards equal height */
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -102,6 +134,17 @@
       font-size: 1.6rem;
       font-weight: 700;
       color: #3a1f6b;
+      margin-bottom: 10px;
+    }
+
+    .club-name {
+      background: linear-gradient(45deg, #4b2e83, #a56eff);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-block;
       margin-bottom: 10px;
     }
 
@@ -125,6 +168,7 @@
       padding: 8px 20px;
       margin-top: 10px;
     }
+
     .btn-dark:hover {
       background-color: #351f5a;
       border-color: #351f5a;
@@ -138,9 +182,17 @@
       padding: 8px 20px;
       margin-top: 10px;
     }
+
     .btn-success:hover {
       background-color: #218838;
       border-color: #218838;
+    }
+
+    .no-events {
+      text-align: center;
+      padding: 50px;
+      color: #6c757d;
+      font-size: 1.2rem;
     }
 
     /* Toast style */
@@ -179,7 +231,13 @@
 </header>
 
 <div class="container">
-  <h2 class="text-center mb-5">Discover Events</h2>
+  <h2 class="text-center mb-3">Discover Events</h2>
+
+  <!-- Simple Search Bar -->
+  <div class="search-container">
+    <input type="text" id="clubSearch" class="search-input" placeholder="Search by club name..." value="{{ query }}">
+    <i class="bi bi-search search-icon"></i>
+  </div>
 
   <!-- Toast Messages -->
   {% if messages %}
@@ -195,19 +253,23 @@
     </div>
   {% endif %}
 
-  <div class="row g-4 justify-content-center">
+  <!-- Events Grid -->
+  <div class="row g-4 justify-content-center" id="eventsGrid">
     {% for es in events_status %}
     {% with event=es.event %}
-    <div class="col-lg-4 col-md-6">
+    <div class="col-lg-4 col-md-6 event-item" 
+         data-club="{% if event.society %}{{ event.society|lower }}{% endif %}">
       <div class="card event-card">
         {% if event.image %}
           <img src="{{ event.image.url }}" class="event-image" alt="{{ event.title }}">
+        {% else %}
+          <img src="{% static 'images/default-event.jpg' %}" class="event-image" alt="Default Event Image">
         {% endif %}
         <div class="card-body">
           <div>
             <h5 class="card-title">{{ event.title }}</h5>
             {% if event.society %}
-              <p class="text-muted">{{ event.society }}</p>
+              <div class="club-name">{{ event.society }}</div>
             {% endif %}
             <p class="card-text">{{ event.description|truncatewords:25 }}</p>
             <div class="event-icons mb-3">
@@ -240,7 +302,10 @@
     </div>
     {% endwith %}
     {% empty %}
-      <p class="text-center">No events available.</p>
+      <div class="no-events">
+        <i class="bi bi-calendar-x" style="font-size: 3rem; margin-bottom: 15px;"></i>
+        <p>No events available at the moment.</p>
+      </div>
     {% endfor %}
   </div>
 </div>
@@ -252,6 +317,71 @@
   toastElList.map(function(toastEl) {
     return new bootstrap.Toast(toastEl, { autohide: false }).show()
   })
+
+  // Simple club search functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('clubSearch');
+    const eventItems = document.querySelectorAll('.event-item');
+
+    // Debug information
+    console.log('Total events found:', eventItems.length);
+    eventItems.forEach((item, index) => {
+      const clubName = item.dataset.club;
+      console.log(`Event ${index + 1}:`, {
+        club: clubName,
+        visibleClub: item.querySelector('.club-name')?.textContent || 'No club'
+      });
+    });
+
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase().trim();
+      console.log('Searching for:', searchTerm);
+      
+      let hasVisibleEvents = false;
+      
+      eventItems.forEach(item => {
+        const clubName = item.dataset.club || '';
+        console.log('Checking:', clubName, 'for:', searchTerm);
+        
+        if (clubName.includes(searchTerm) || searchTerm === '') {
+          item.style.display = 'block';
+          hasVisibleEvents = true;
+          console.log('SHOWING:', clubName);
+        } else {
+          item.style.display = 'none';
+          console.log('HIDING:', clubName);
+        }
+      });
+      
+      console.log('Any visible events?', hasVisibleEvents);
+      
+      // Show no results message
+      const noResults = document.getElementById('noResults');
+      if (!hasVisibleEvents && searchTerm !== '') {
+        if (!noResults) {
+          const noResultsDiv = document.createElement('div');
+          noResultsDiv.id = 'noResults';
+          noResultsDiv.className = 'no-events col-12';
+          noResultsDiv.innerHTML = `
+            <i class="bi bi-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
+            <p>No events found for club: "${searchTerm}"</p>
+            <small class="text-muted">Try searching with different club name</small>
+          `;
+          document.getElementById('eventsGrid').appendChild(noResultsDiv);
+        }
+      } else if (noResults) {
+        noResults.remove();
+      }
+    });
+
+    // If there's a query from URL, trigger search
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    if (queryParam) {
+      searchInput.value = queryParam;
+      searchInput.dispatchEvent(new Event('input'));
+    }
+  });
 </script>
 
 </body>

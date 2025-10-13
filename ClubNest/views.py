@@ -160,15 +160,34 @@ def join_club(request, club_id):
     return redirect('club_list')
 
 
+from django.shortcuts import render, get_object_or_404
+from datetime import date
+from .models import Club, Event  # তোমার model অনুযায়ী ঠিক রাখো
+
+from django.shortcuts import render, get_object_or_404
+from datetime import date
+from .models import Club, Event
+
+
+from django.shortcuts import render, get_object_or_404
+from datetime import date
+from .models import Club, Event
+
 def club_detail(request, slug):
     club = get_object_or_404(Club, slug=slug)
     today = date.today()
-    upcoming_events = Event.objects.filter(club=club, date__gte=today).order_by('date')
-    return render(request, 'club_detail.html', {
-        'club': club,
-        'events': upcoming_events
-    })
 
+    # Filter by club ForeignKey OR by society name (backup)
+    upcoming_events = Event.objects.filter(
+        models.Q(club=club) | models.Q(society__icontains=club.name),
+        date__gte=today
+    ).order_by('date')
+
+    context = {
+        'club': club,
+        'events': upcoming_events,
+    }
+    return render(request, 'club_detail.html', context)
 
 # ---------- EVENTS ----------
 def events_page(request):
@@ -176,8 +195,9 @@ def events_page(request):
     user = request.user if request.user.is_authenticated else None
     query = request.GET.get('q', '').strip()
 
+    # Filter events based on society field
     if query:
-        events = Event.objects.filter(club__name__icontains=query)
+        events = Event.objects.filter(society__icontains=query)
     else:
         events = Event.objects.all()
 
@@ -188,12 +208,14 @@ def events_page(request):
         participation_id = None
 
         if user:
-            joined = Participation.objects.filter(event=event, user=user).exists()
-            if event.date < today and joined:
-                p = Participation.objects.filter(event=event, user=user).first()
-                if p:
-                    attended = True
-                    participation_id = p.id
+            # Check if user joined the event
+            participation = Participation.objects.filter(event=event, user=user).first()
+            if participation:
+                joined = True
+                participation_id = participation.id
+                # Check if user attended (for past events)
+                if event.date < today:
+                    attended = participation.attended
 
         events_status.append({
             'event': event,
@@ -207,8 +229,6 @@ def events_page(request):
         'today': today,
         'query': query
     })
-
-
 @login_required
 def join_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
