@@ -415,13 +415,4 @@ def upcoming_events(request):
         'today': today,
         'query': '',
     })
-from django.shortcuts import render
-from .models import Sponsor
 
-def sponsor_list(request):
-    sponsors = Sponsor.objects.filter(is_active=True).order_by('priority', 'name')
-    context = {
-        'sponsors': sponsors,
-        'page_title': "Our Sponsors & Partners"
-    }
-    return render(request, 'sponsor_list.html', context)
