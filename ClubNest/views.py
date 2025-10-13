@@ -6,9 +6,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.db import models
 
 from .forms import UserForm, ProfileForm
 from .models import Profile, Club, Membership, Event, Participation, Certificate
+
 
 # ---------- BASIC PAGES ----------
 def home(request):
@@ -16,8 +18,10 @@ def home(request):
         Profile.objects.get_or_create(user=request.user)
     return render(request, 'home.html')
 
+
 def about_us(request):
     return render(request, 'about_us.html')
+
 
 # ---------- USER AUTH ----------
 def signup(request):
@@ -57,6 +61,7 @@ def signup(request):
 
     return render(request, "signup.html")
 
+
 def signin(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -68,15 +73,18 @@ def signin(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
+
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
     return redirect('home')
 
+
 # ---------- PROFILE ----------
 @login_required
 def profile(request):
     return render(request, 'profile.html')
+
 
 @login_required
 def edit_profile(request):
@@ -99,8 +107,8 @@ def edit_profile(request):
         'profile_form': profile_form,
     })
 
+
 # ---------- CLUB ----------
-# ClubNest/views.py - club_list function e change koro
 def club_list(request):
     user = request.user if request.user.is_authenticated else None
     query = request.GET.get('q', '').strip()
@@ -119,7 +127,6 @@ def club_list(request):
         membership = None
         if user:
             try:
-                # TRY-EXCEPT diye wrap koro
                 membership = Membership.objects.filter(club=club, profile__user=user).first()
             except:
                 membership = None
@@ -132,11 +139,10 @@ def club_list(request):
     return render(request, 'club_list.html', {'clubs_with_status': clubs_with_status})
 
 
-# ClubNest/views.py - join_club function
 @login_required
 def join_club(request, club_id):
     club = get_object_or_404(Club, id=club_id)
-    profile, _ = Profile.objects.get_or_create(user=request.user)
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     try:
         membership, created = Membership.objects.get_or_create(profile=profile, club=club)
@@ -148,10 +154,12 @@ def join_club(request, club_id):
                 messages.info(request, "Your join request is pending approval.")
         else:
             messages.success(request, "Join request sent! Please wait for admin approval.")
-    except Exception as e:
+    except Exception:
         messages.error(request, "System is updating. Please try again later.")
 
     return redirect('club_list')
+
+
 def club_detail(request, slug):
     club = get_object_or_404(Club, slug=slug)
     today = date.today()
@@ -160,6 +168,7 @@ def club_detail(request, slug):
         'club': club,
         'events': upcoming_events
     })
+
 
 # ---------- EVENTS ----------
 def events_page(request):
@@ -199,6 +208,7 @@ def events_page(request):
         'query': query
     })
 
+
 @login_required
 def join_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -215,6 +225,7 @@ def join_event(request, event_id):
         messages.info(request, "You have already joined this event.")
 
     return redirect('events_page')
+
 
 # ---------- CERTIFICATE ----------
 @login_required
@@ -249,8 +260,6 @@ def generate_certificate_view(request, participation_id):
     from reportlab.pdfbase.ttfonts import TTFont
     from reportlab.platypus import Paragraph, Frame
     from reportlab.lib.styles import ParagraphStyle
-    from django.http import HttpResponse
-    from django.shortcuts import get_object_or_404
     import io, os
 
     participation = get_object_or_404(
@@ -264,7 +273,7 @@ def generate_certificate_view(request, participation_id):
     p = canvas.Canvas(buffer, pagesize=landscape(letter))
     width, height = landscape(letter)
 
-    # === Font Registration ===
+    # === Font ===
     arial_path = "C:/Windows/Fonts/arial.ttf"
     if os.path.exists(arial_path):
         pdfmetrics.registerFont(TTFont('Arial', arial_path))
@@ -290,19 +299,17 @@ def generate_certificate_view(request, participation_id):
     p.restoreState()
 
     # === Header ===
-    p.setFillColor(colors.HexColor("#8B4513"))
-    p.setFillColorRGB(0.36, 0.25, 0.20)
     p.setFont("Helvetica-Bold", 24)
+    p.setFillColor(colors.HexColor("#8B4513"))
     p.drawCentredString(width / 2, height - 1.8 * inch, "UNIVERSITY OF ASIA PACIFIC")
 
     p.setFont("Helvetica", 14)
-    p.drawCentredString(width / 2, height - 2.3 * inch, "74/A, Green Road, Farmgate,Dhaka-1205, Bangladesh")
+    p.drawCentredString(width / 2, height - 2.3 * inch, "74/A, Green Road, Farmgate, Dhaka-1205, Bangladesh")
 
     p.setLineWidth(3)
     p.line(1 * inch, height - 2.7 * inch, width - 1 * inch, height - 2.7 * inch)
 
     # === Certificate Title ===
-    p.setFillColor(colors.HexColor("#8B4513"))
     p.setFont("Helvetica-Bold", 36)
     p.setFillColor(colors.HexColor("#8B4513"))
     p.drawCentredString(width / 2, height - 3.5 * inch, "CERTIFICATE")
@@ -311,59 +318,42 @@ def generate_certificate_view(request, participation_id):
     p.setFillColor(colors.darkgoldenrod)
     p.drawCentredString(width / 2, height - 4.0 * inch, "of Achievement")
 
-    # === Event Title ===
-    p.setFont("Helvetica-Bold", 16)
-    p.setFillColor(colors.brown)
-    event_title = str(participation.event.title)
-
-
-    # === Paragraph Style ===
+    # === Body Text ===
     style = ParagraphStyle(
         name='Normal',
         fontName=font_name,
         fontSize=13,
         leading=18,
-        alignment=1,  # center
+        alignment=1,
         textColor=colors.HexColor("#5D4037"),
     )
 
-    # === Certificate Body Text ===
     user_name = str(participation.user.get_full_name() or participation.user.username)
+    event_title = str(participation.event.title)
     event_society = str(participation.event.society or "Club Nest")
     event_date = participation.event.date.strftime("%B %d, %Y")
 
     certificate_text = f"""
-    This is to certify that <font color="#8B4513"><b>{user_name.upper()}</b></font> has successfully participated and demonstrated exceptional enthusiasm in the event <font color="#8B4513"> <b>{event_title}</b> </font>organized by <font color="#8B4513"> <b>{event_society}</b></font> at the University of Asia Pacific, held on <font color="#8B4513"> <b>{event_date}</b></font>. 
+    This is to certify that <font color="#8B4513"><b>{user_name.upper()}</b></font> has successfully participated and demonstrated exceptional enthusiasm in the event <font color="#8B4513"><b>{event_title}</b></font> organized by <font color="#8B4513"><b>{event_society}</b></font> at the University of Asia Pacific, held on <font color="#8B4513"><b>{event_date}</b></font>.
     <br/><br/>
-    <i>We extend our heartfelt congratulations and wish continued success in all future academic and professional pursuits. May this achievement be a stepping stone to greater accomplishments.</i>
+    <i>We extend our heartfelt congratulations and wish continued success in all future academic and professional pursuits.</i>
     """
 
-    # === Paragraph Frame (Below title, above signatures) ===
-    frame_top = height -  4.3  * inch
+    frame_top = height - 4.3 * inch
     frame_height = 2.7 * inch
-
-    frame = Frame(
-        1.3 * inch,  # left margin
-        frame_top - frame_height,  # bottom Y
-        width - 2.6 * inch,  # width
-        frame_height,  # height
-        showBoundary=0
-    )
+    frame = Frame(1.3 * inch, frame_top - frame_height, width - 2.6 * inch, frame_height, showBoundary=0)
     paragraph = Paragraph(certificate_text, style)
     frame.addFromList([paragraph], p)
 
     # === Signatures ===
     p.setLineWidth(2)
     p.setFont("Helvetica", 12)
-
-    # Left Signature
     p.line(1.5 * inch, 1.8 * inch, 3.5 * inch, 1.8 * inch)
     p.drawCentredString(2.5 * inch, 1.6 * inch, "Dr. Manoj Bhardwaj")
     p.setFont("Helvetica", 11)
     p.drawCentredString(2.5 * inch, 1.45 * inch, "Faculty Coordinator")
     p.drawCentredString(2.5 * inch, 1.3 * inch, "Tech Nation Club")
 
-    # Right Signature
     p.setFont("Helvetica", 12)
     p.line(width - 3.5 * inch, 1.8 * inch, width - 1.5 * inch, 1.8 * inch)
     p.drawCentredString(width - 2.5 * inch, 1.6 * inch, "Dr. Veena Singh")
@@ -371,7 +361,6 @@ def generate_certificate_view(request, participation_id):
     p.drawCentredString(width - 2.5 * inch, 1.45 * inch, "IIC President")
     p.drawCentredString(width - 2.5 * inch, 1.3 * inch, "UAP")
 
-    # === Finalize PDF ===
     p.save()
     pdf = buffer.getvalue()
     buffer.close()
@@ -383,13 +372,33 @@ def generate_certificate_view(request, participation_id):
     return response
 
 
-# sponsors/views.py
+# ---------- UPCOMING EVENTS ----------
+def upcoming_events(request):
+    today = date.today()
+    user = request.user if request.user.is_authenticated else None
 
+    events = Event.objects.filter(date__gte=today).select_related('club').order_by('date')
+    events_status = []
+
+    for event in events:
+        joined = Participation.objects.filter(event=event, user=user).exists() if user else False
+
+        events_status.append({
+            'event': event,
+            'joined': joined,
+            'attended': False,
+            'participation_id': None
+        })
+
+    return render(request, 'events.html', {
+        'events_status': events_status,
+        'today': today,
+        'query': '',
+    })
 from django.shortcuts import render
 from .models import Sponsor
 
 def sponsor_list(request):
-    # Retrieve only active sponsors, ordered by priority and then name
     sponsors = Sponsor.objects.filter(is_active=True).order_by('priority', 'name')
     context = {
         'sponsors': sponsors,

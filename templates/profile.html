@@ -117,18 +117,20 @@
 
 
         <div class="fw-bold mb-1">Enrolled Clubs:</div>
-        {% if user.profile.clubs.all %}
-        <ul class="clubs-list list-unstyled">
-  {% for club in user.profile.clubs.all %}
-    <li>• {{ club.name }}</li>
-  {% empty %}
-    <li>No clubs enrolled yet.</li>
-  {% endfor %}
-</ul>
 
-        {% else %}
-          <p>No clubs enrolled yet.</p>
-        {% endif %}
+{% if user.profile.clubs.exists %}
+
+  <ul class="clubs-list list-unstyled">
+    {% for club in user.profile.clubs.all %}
+      <li>• {{ club.name }}</li>
+    {% empty %}
+      <li>No clubs enrolled yet.</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No clubs enrolled yet.</p>
+{% endif %}
+
       </div>
 
       <!-- Buttons -->
