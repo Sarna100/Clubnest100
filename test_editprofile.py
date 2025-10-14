@@ -1,5 +1,7 @@
 import os
 import time
+import random
+import string
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
@@ -11,7 +13,7 @@ from selenium.common.exceptions import TimeoutException
 
 # --- Setup ---
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-wait = WebDriverWait(driver, 10)
+wait = WebDriverWait(driver, 15)
 print("WebDriver initialized.")
 
 # --- Test Steps ---
@@ -21,31 +23,17 @@ try:
     LOGIN_PASSWORD = "123"
     SUCCESS_URL_PART = "/profile/"
 
-    # --- Step 1: Login (Slowed Down) ---
-    print("--- Step 1: Attempting to Log In (Slowly) ---")
+    # --- Step 1: Login ---
+    print("--- Step 1: Attempting to Log In ---")
     driver.get('http://127.0.0.1:8000/clubnest/signin/')
-
-    # Type username slowly
-    username_field = wait.until(EC.presence_of_element_located((By.NAME, 'username')))
-    username_field.send_keys(LOGIN_USERNAME)
-    print("- Entered username.")
-    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE ADDED
-
-    # Type password slowly
-    password_field = wait.until(EC.presence_of_element_located((By.NAME, 'password')))
-    password_field.send_keys(LOGIN_PASSWORD)
-    print("- Entered password.")
-    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE ADDED
-
-    # Click button
+    wait.until(EC.presence_of_element_located((By.NAME, 'username'))).send_keys(LOGIN_USERNAME)
+    wait.until(EC.presence_of_element_located((By.NAME, 'password'))).send_keys(LOGIN_PASSWORD)
     wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[type="submit"]'))).click()
-    print("- Clicked Sign In.")
 
     # --- Step 2: VERIFY Login Success ---
     try:
         wait.until(EC.url_contains(SUCCESS_URL_PART))
         print(f"✅ Login Successful. Redirected to a URL containing '{SUCCESS_URL_PART}'.")
-        time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE ADDED
     except TimeoutException:
         raise Exception("Login failed. Check credentials or the SUCCESS_URL_PART variable.")
 
@@ -53,34 +41,63 @@ try:
     print("\n--- Step 3: Navigating to Edit Profile Page ---")
     driver.get('http://127.0.0.1:8000/clubnest/profile/edit/')
 
-    # --- Step 4: Update Form Fields (Slowed Down) ---
-    print("Updating form fields slowly...")
+    # --- Step 4: Generate and Fill Form with RANDOM Data (Slowly) ---
+    print("Updating form fields with random data...")
 
-    # Update First Name
+    # A) Generate and input random First and Last Name
+    first_names = ["Alex", "Jordan", "Taylor", "Casey", "Morgan", "Jamie", "Riley"]
+    last_names = ["Smith", "Jones", "Williams", "Brown", "Davis", "Miller", "Wilson"]
+    random_first_name = random.choice(first_names)
+    random_last_name = random.choice(last_names)
+
     first_name_field = wait.until(EC.presence_of_element_located((By.NAME, 'first_name')))
     first_name_field.clear()
-    time.sleep(0.5)  # <<<<<<<<<<<<<<<< PAUSE ADDED
-    first_name_field.send_keys("sarna")
-    print("- Updated first name to 'sarna'.")
-    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE ADDED
+    time.sleep(0.5)  # <<<<<<<<<<<<<<<< PAUSE
+    first_name_field.send_keys(random_first_name)
+    print(f"- Updated first name to: '{random_first_name}'")
+    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE
 
-    # Update Last Name
     last_name_field = wait.until(EC.presence_of_element_located((By.NAME, 'last_name')))
     last_name_field.clear()
-    time.sleep(0.5)  # <<<<<<<<<<<<<<<< PAUSE ADDED
-    last_name_field.send_keys("rani")
-    print("- Updated last name to 'rani'.")
-    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE ADDED
+    time.sleep(0.5)  # <<<<<<<<<<<<<<<< PAUSE
+    last_name_field.send_keys(random_last_name)
+    print(f"- Updated last name to: '{random_last_name}'")
+    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE
+
+    # B) Generate and input a unique random Email
+    random_part = ''.join(random.choices(string.digits, k=5))
+    random_email = f"{random_first_name.lower()}.{random_last_name.lower()}{random_part}@example.com"
+    email_field = wait.until(EC.presence_of_element_located((By.NAME, 'email')))
+    email_field.clear()
+    time.sleep(0.5)  # <<<<<<<<<<<<<<<< PAUSE
+    email_field.send_keys(random_email)
+    print(f"- Updated email to: '{random_email}'")
+    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE
+
+    # C) Randomly select a Department
+    department_element = wait.until(EC.element_to_be_clickable((By.NAME, 'department')))
+    department_dropdown = Select(department_element)
+    all_dept_options = department_dropdown.options[1:]
+    random_dept_option = random.choice(all_dept_options)
+    department_dropdown.select_by_visible_text(random_dept_option.text)
+    print(f"- Randomly selected department: '{random_dept_option.text}'")
+    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE
+
+    # D) Randomly select a Semester
+    semester_element = wait.until(EC.element_to_be_clickable((By.NAME, 'semester')))
+    semester_dropdown = Select(semester_element)
+    all_sem_options = semester_dropdown.options[1:]
+    random_sem_option = random.choice(all_sem_options)
+    semester_dropdown.select_by_visible_text(random_sem_option.text)
+    print(f"- Randomly selected semester: '{random_sem_option.text}'")
+    time.sleep(2)  # A final pause to see all the random data entered
 
     # --- Step 5: Submit Form ---
     print("Finding the 'Save Changes' button...")
     save_button = wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(text(), 'Save Changes')]")))
-
-    time.sleep(1)  # <<<<<<<<<<<<<<<< PAUSE ADDED before click
     driver.execute_script("arguments[0].click();", save_button)
-    print("Clicked 'Save Changes' button using JavaScript.")
+    print("Clicked 'Save Changes' button.")
 
-    # Increased the final wait time to 15 seconds
     print("\n✅ Test finished successfully. The browser will close in 15 seconds.")
     time.sleep(15)
 
