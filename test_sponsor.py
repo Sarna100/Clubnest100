@@ -6,45 +6,85 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+
+# --- Configuration ---
+ABOUT_URL = 'http://127.0.0.1:8000/clubnest/about-us/'
+SPONSOR_URL = 'http://127.0.0.1:8000/clubnest/sponsors/'
+# Assuming your Django Home page URL is the root of the app
+HOME_URL = 'http://127.0.0.1:8000/clubnest/'
 
 # --- Setup ---
-# Automatically configures and starts the Chrome WebDriver
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-# Sets up a waiter that will wait up to 10 seconds for elements to appear
-wait = WebDriverWait(driver, 10)
+wait = WebDriverWait(driver, 15)
 print("WebDriver initialized successfully.")
+
+
+# --- Helper Functions ---
+def smooth_scroll_to_bottom(driver):
+    """Scrolls to the bottom of the page in steps for visual smoothness."""
+    for i in range(1, 11):
+        driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight * {i / 10});")
+        time.sleep(0.3)  # Small pause between scroll steps
+    time.sleep(3)
+    print("Scrolled smoothly to the bottom of the page.")
+
+
+def smooth_scroll_to_element(driver, element):
+    """Smoothly scrolls the page until the target element is in view."""
+    driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
+    time.sleep(3)
+
 
 # --- Test Steps ---
 try:
-    # 1. Open your local sponsor_list.html file
-    file_path = os.path.abspath('sponsor_list.html')
-    driver.get(f'http://127.0.0.1:8000/clubnest/sponsors/')
-    print(f"Successfully opened the file: {file_path}")
+    # 1. Navigate to the About Page
+    driver.get(ABOUT_URL)
+    print(f"1. Successfully opened the About page: {ABOUT_URL}")
+    time.sleep(2)
 
-    # 2. Find the "Contact us" link in the footer and click it
-    # We use `By.LINK_TEXT` to find an <a> tag by its visible text.
-    # We also use an explicit wait to ensure the page is loaded before we search.
-    print("Searching for the 'Contact us' link in the footer...")
-    contact_link = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, 'Contact us')))
+    # 2. Find and hover over the 'More' dropdown
+    print("\n2. Finding and hovering over the 'More' dropdown...")
+    more_dropdown_parent = wait.until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'dropdown'))
+    )
 
-    # Optional: Scroll the element into view to ensure it is clickable
-    driver.execute_script("arguments[0].scrollIntoView(true);", contact_link)
-    time.sleep(0.5)  # A small pause after scrolling
+    # Hover action is needed to make the dropdown links visible
+    ActionChains(driver).move_to_element(more_dropdown_parent).perform()
+    time.sleep(1.5)  # Pause to let the dropdown animation complete
 
-    contact_link.click()
-    print("Successfully clicked the 'Contact us' link.")
+    # 3. Find and click the 'Sponsors' link within the dropdown
+    print("3. Clicking the 'Sponsors' link...")
+    sponsors_link = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//div[@class='dropdown-content']/a[text()='Sponsors']"))
+    )
 
-    # 3. Wait to observe the result
-    # In a real test, you would check if the click led to a new page or a contact form.
-    # For this demonstration, we'll just pause.
-    print("Test completed. The browser will close in 5 seconds.")
-    time.sleep(0.5)
+    sponsors_link.click()
+    print("Successfully clicked 'Sponsors'. Navigating to the Sponsors page.")
+
+    # Wait for the Sponsors page to fully load
+    wait.until(EC.url_to_be(SPONSOR_URL))
+    time.sleep(3)
+
+    # 4. Scroll the Sponsors page
+    print("\n4. Scrolling the Sponsors page to view all content...")
+    smooth_scroll_to_bottom(driver)
+
+    # --- NEW STEP: GO BACK TO HOME ---
+    print("\n5. Test finished. Navigating back to the Home page...")
+    driver.get(HOME_URL)
+    wait.until(EC.url_to_be(HOME_URL))
+    print(f"Successfully landed on the Home page: {HOME_URL}")
+    # --- END OF NEW STEP ---
+
+    # 6. Wait to observe the final result
+    print("\nTest completed. The browser will close in 7 seconds.")
+    time.sleep(7)
 
 except Exception as e:
     print(f"An error occurred during the test: {e}")
 
 finally:
     # --- Teardown ---
-    # 4. Close the browser window to end the session
     driver.quit()
     print("Browser has been closed.")
