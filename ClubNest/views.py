@@ -62,14 +62,14 @@ def signup(request):
             profile.semester = semester
         profile.save()
 
-        # ✅ এই return টি POST request এর জন্য
+
         return HttpResponse(f"""
             <h2 style='color:green;text-align:center;margin-top:20%;'>🎉 Welcome {first_name}!</h2>
             <p style='text-align:center;'>Your account has been created successfully.</p>
             <a href='/clubnest/signin/' style='display:block;text-align:center;'>🚀 Go to Sign In</a>
         """)
 
-    # ✅ এই return টি GET request এর জন্য (if statement এর বাইরে)
+
     return render(request, "signup.html")
 
 
