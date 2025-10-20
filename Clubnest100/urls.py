@@ -8,6 +8,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),  # Home page
     path('clubnest/', include('ClubNest.urls')),  # ClubNest app URLs
+    path('upload-gallery-image/', views.upload_gallery_image, name='upload_gallery_image'),
+    path('get-gallery-images/', views.get_gallery_images, name='get_gallery_images'),
 
 ]
 

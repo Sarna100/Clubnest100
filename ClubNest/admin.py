@@ -86,3 +86,12 @@ class SponsorAdmin(admin.ModelAdmin):
         return "-"
     website_link_display.allow_tags = True
     website_link_display.short_description = "Website Link"
+# your_app/admin.py
+from django.contrib import admin
+from .models import GalleryImage
+
+@admin.register(GalleryImage)
+class GalleryImageAdmin(admin.ModelAdmin):
+    list_display = ['title', 'category', 'date_taken', 'uploaded_at']
+    list_filter = ['category', 'date_taken']
+    search_fields = ['title']

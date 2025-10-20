@@ -170,3 +170,27 @@ class Sponsor(models.Model):
 
     def __str__(self):
         return self.name
+
+
+from django.db import models
+from django.utils import timezone
+
+
+class GalleryImage(models.Model):
+    CATEGORY_CHOICES = [
+        ('events', 'Events'),
+        ('workshops', 'Workshops'),
+        ('social', 'Social'),
+    ]
+
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='gallery/')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    date_taken = models.DateField(default=timezone.now)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-date_taken']

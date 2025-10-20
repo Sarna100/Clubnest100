@@ -5,11 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import models
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import UserForm, ProfileForm
-from .models import Profile, Club, Membership, Event, Participation, Certificate
+from .models import Profile, Club, Membership, Event, Participation, Certificate, GalleryImage
 
 
 # ---------- BASIC PAGES ----------
@@ -19,9 +20,89 @@ def home(request):
     return render(request, 'home.html')
 
 
-def about_us(request):
-    return render(request, 'about_us.html')
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import GalleryImage
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+import json
 
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import GalleryImage
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+import json
+
+
+def about_us(request):
+    # Get all gallery images from database
+    gallery_images = GalleryImage.objects.all()
+
+    # Check if user is admin/staff
+    is_admin = request.user.is_staff
+
+    context = {
+        'gallery_images': gallery_images,
+        'is_admin': is_admin,
+    }
+    return render(request, 'about_us.html', context)
+
+
+@csrf_exempt
+def upload_gallery_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        # Check if user is admin
+        if not request.user.is_staff:
+            return JsonResponse({'success': False, 'message': 'Permission denied'})
+
+        try:
+            title = request.POST.get('title')
+            category = request.POST.get('category')
+            date_taken = request.POST.get('date_taken')
+            image_file = request.FILES['image']
+
+            # Create and save gallery image
+            gallery_image = GalleryImage(
+                title=title,
+                category=category,
+                date_taken=date_taken,
+                image=image_file
+            )
+            gallery_image.save()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'Image uploaded successfully',
+                'image_url': gallery_image.image.url,
+                'title': gallery_image.title,
+                'category': gallery_image.category,
+                'date': gallery_image.date_taken.strftime('%B %d, %Y')
+            })
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+
+def get_gallery_images(request):
+    try:
+        # Get all gallery images ordered by date (newest first)
+        gallery_images = GalleryImage.objects.all().order_by('-date_taken')
+
+        images_data = []
+        for image in gallery_images:
+            images_data.append({
+                'id': image.id,
+                'title': image.title,
+                'image_url': image.image.url,
+                'category': image.category,
+                'date': image.date_taken.strftime('%B %d, %Y')
+            })
+
+        return JsonResponse({'images': images_data}, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 # ---------- USER AUTH ----------
 def signup(request):
@@ -503,3 +584,34 @@ def leave_club(request, club_id):
         messages.error(request, "You are not a member of this club.")
 
     return redirect('profile')
+
+
+@csrf_exempt
+def upload_gallery_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            title = request.POST.get('title')
+            category = request.POST.get('category')
+            date_taken = request.POST.get('date_taken')
+            image_file = request.FILES['image']
+
+            gallery_image = GalleryImage(
+                title=title,
+                category=category,
+                date_taken=date_taken,
+                image=image_file
+            )
+            gallery_image.save()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'Image uploaded successfully',
+                'image_url': gallery_image.image.url,
+                'title': gallery_image.title,
+                'category': gallery_image.category,
+                'date': gallery_image.date_taken.strftime('%B %d, %Y')
+            })
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'})

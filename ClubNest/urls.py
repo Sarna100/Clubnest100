@@ -52,6 +52,8 @@ path('events/', views.events_page, name='events_page'),
          name='password_reset_complete'),
 path('clubs/<slug:club_slug>/members/', views.all_members, name='all_members'),
     path('leave-club/<int:club_id>/', views.leave_club, name='leave_club'),
+    path('upload-gallery-image/', views.upload_gallery_image, name='upload_gallery_image'),
+    path('get-gallery-images/', views.get_gallery_images, name='get_gallery_images'),
 ]
 
 
