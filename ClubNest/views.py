@@ -586,6 +586,8 @@ def leave_club(request, club_id):
     return redirect('profile')
 
 
+
+
 @csrf_exempt
 def upload_gallery_image(request):
     if request.method == 'POST' and request.FILES.get('image'):
