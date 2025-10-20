@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ club.name }} - All Members</title>
+  <style>
+    :root {
+      --primary: #6a3cb5;
+      --accent: #a56eff;
+      --bg-glass: rgba(255, 255, 255, 0.4);
+      --blur: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right top, #e3d5ff, rgba(243, 240, 255, 0.7));
+      color: #333;
+    }
+
+    nav {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      padding: 15px;
+      text-align: center;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    nav a {
+      color: white;
+      margin: 0 20px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 17px;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #ffe6f0;
+    }
+
+    .content {
+      max-width: 1200px;
+      margin: 100px auto 40px; /* top margin for navbar */
+      padding: 0 20px;
+    }
+
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .members-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .member-card {
+      text-align: center;
+      width: 120px;
+      background: var(--bg-glass);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(106, 60, 181, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .member-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(106,60,181,0.4);
+    }
+
+    .member-card img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      transition: transform 0.3s ease;
+    }
+
+    .member-card img:hover {
+      transform: scale(1.1);
+    }
+
+    .member-card p {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .member-card span {
+      font-size: 12px;
+      color: #555;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .member-card {
+        width: 90px;
+        padding: 8px;
+      }
+      .member-card img {
+        width: 60px;
+        height: 60px;
+      }
+      nav a {
+        font-size: 14px;
+        margin: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="{% url 'home' %}">Home</a>
+  <a href="{% url 'club_list' %}">Clubs</a>
+  <a href="{% url 'club_detail' club.id %}">Back to Club</a>
+</nav>
+
+<div class="content">
+  <h1>{{ club.name }} - All Members</h1>
+  {% if approved_members %}
+    <div class="members-container">
+      {% for member in approved_members %}
+        <div class="member-card">
+          {% if member.profile.profile_pic %}
+            <img src="{{ member.profile.profile_pic.url }}" alt="{{ member.profile.user.username }}">
+          {% else %}
+            <img src="{% static 'images/default-profile.png' %}" alt="{{ member.profile.user.username }}">
+          {% endif %}
+          <p>
+            <a href="{% url 'profile_view' member.profile.user.id %}">{{ member.profile.user.username }}</a>
+            <span>{{ member.profile.user.email }}</span>
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="text-align:center; color:#555;">No members yet.</p>
+  {% endif %}
+</div>
+
+</body>
+</html>

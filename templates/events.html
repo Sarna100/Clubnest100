@@ -257,7 +257,7 @@
   <div class="row g-4 justify-content-center" id="eventsGrid">
     {% for es in events_status %}
     {% with event=es.event %}
-    <div class="col-lg-4 col-md-6 event-item" 
+    <div class="col-lg-4 col-md-6 event-item"
          data-club="{% if event.society %}{{ event.society|lower }}{% endif %}">
       <div class="card event-card">
         {% if event.image %}
@@ -336,13 +336,13 @@
     searchInput.addEventListener('input', function() {
       const searchTerm = this.value.toLowerCase().trim();
       console.log('Searching for:', searchTerm);
-      
+
       let hasVisibleEvents = false;
-      
+
       eventItems.forEach(item => {
         const clubName = item.dataset.club || '';
         console.log('Checking:', clubName, 'for:', searchTerm);
-        
+
         if (clubName.includes(searchTerm) || searchTerm === '') {
           item.style.display = 'block';
           hasVisibleEvents = true;
@@ -352,9 +352,9 @@
           console.log('HIDING:', clubName);
         }
       });
-      
+
       console.log('Any visible events?', hasVisibleEvents);
-      
+
       // Show no results message
       const noResults = document.getElementById('noResults');
       if (!hasVisibleEvents && searchTerm !== '') {

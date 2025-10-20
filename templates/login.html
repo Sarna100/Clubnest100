@@ -92,6 +92,21 @@
       font-weight: bold;
     }
 
+    .forgot {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .forgot a {
+      color: #8a2be2;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .forgot a:hover {
+      text-decoration: underline;
+    }
+
     .back-btn {
       position: absolute;
       top: 20px;
@@ -112,12 +127,10 @@
 
     .back-btn:hover { background: #6a1bbd; }
 
-    /* Django form error messages */
     .errorlist { color: red; margin: 0 0 10px 0; padding: 0; list-style: none; font-size: 13px; }
   </style>
 </head>
 <body>
-
 
   <div class="container">
     <div class="logo">CN</div>
@@ -153,11 +166,16 @@
       <button type="submit" class="btn">Sign In</button>
     </form>
 
+    <!-- Forgot Password Section -->
+    <div class="forgot">
+      <a href="{% url 'password_reset' %}">Forgot Password?</a>
+    </div>
+
     <div class="signup">
       Don’t have an account? <a href="{% url 'signup' %}">Sign up</a>
-   
     </div>
-     <a href="{% url 'home' %}" class="back-home">Back to Home</a>
+
+    <a href="{% url 'home' %}" class="back-btn"><i class="fa fa-arrow-left"></i> Back</a>
   </div>
 
 </body>

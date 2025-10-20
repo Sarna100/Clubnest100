@@ -108,6 +108,9 @@ class Event(models.Model):
     image = models.ImageField(upload_to='event_images/')
     club = models.ForeignKey(Club, on_delete=models.CASCADE, blank=True, null=True, help_text="Event organizing club")
 
+
+
+
     def __str__(self):
         return self.title
 

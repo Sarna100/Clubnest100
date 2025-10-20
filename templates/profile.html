@@ -55,15 +55,47 @@
       color: #2c2c54;
       margin-bottom: 8px;
     }
-.clubs-list {
-  padding-left: 0;
-  text-align: center;
-  margin-top: 8px;
-  font-weight: 600;         /* Make text bold */
-  color: #3956e6;           /* Darker color for better visibility */
-  font-size: 16px;          /* Slightly bigger */
-}
-
+    .info-item {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border-left: 4px solid #6a11cb;
+    }
+    .clubs-section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border-left: 4px solid #28a745;
+    }
+    .club-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 10px 15px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    .club-name {
+      font-weight: 600;
+      color: #2c2c54;
+    }
+    .leave-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .leave-btn:hover {
+      background: #c82333;
+    }
     .btn-custom {
       margin-top: 20px;
       background: linear-gradient(to right, #6a11cb, #2575fc);
@@ -84,7 +116,6 @@
       font-size: 14px;
       color: #2575fc;
       text-decoration: none;
-      transition: color 0.3s;
     }
     .back-home:hover {
       text-decoration: underline;
@@ -95,47 +126,74 @@
 <body>
 
   <div class="card profile-card">
-    <!-- Header with gradient -->
     <div class="profile-header">
       <h2>My Profile</h2>
-      <!-- Profile Picture -->
-      {% if user.profile.profile_pic %}
-        <img src="{{ user.profile.profile_pic.url }}" alt="Profile Picture" class="profile-pic" />
+      {% if profile.profile_pic %}
+        <img src="{{ profile.profile_pic.url }}" alt="Profile Picture" class="profile-pic" />
       {% else %}
         <img src="{% static 'default.png' %}" alt="Default Profile Picture" class="profile-pic" />
       {% endif %}
     </div>
 
     <div class="card-body">
-      <!-- Full Name -->
-      <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+      <h4>{{ profile.user.first_name }} {{ profile.user.last_name }}</h4>
+      <p class="text-muted">@{{ profile.user.username }}</p>
 
       <!-- User Info -->
-     <div class="text-center mt-4 px-4">
-             <p class="fw-bold mb-2">Department: {{ user.profile.department }}</p>
-        <p class="fw-bold mb-2">Semester: {{ user.profile.semester }}</p>
+      <div class="text-start mt-4 px-4">
+        <!-- Department -->
+        <div class="info-item">
+          <strong>🎓 Department:</strong> 
+          {% if profile.department %}
+            <span class="text-primary">{{ profile.department }}</span>
+          {% else %}
+            <span class="text-muted">Not set</span>
+          {% endif %}
+        </div>
+
+        <!-- Semester -->
+        <div class="info-item">
+          <strong>📚 Semester:</strong> 
+          {% if profile.semester %}
+            <span class="text-primary">{{ profile.semester }}</span>
+          {% else %}
+            <span class="text-muted">Not set</span>
+          {% endif %}
+        </div>
+
+        <!-- Email -->
+        <div class="info-item">
+          <strong>📧 Email:</strong> 
+          <span class="text-primary">{{ profile.user.email }}</span>
+        </div>
+
+        <!-- ✅ Clubs Section with Leave Option -->
+        <div class="clubs-section">
+          <strong>🏆 My Clubs:</strong> 
+          <div class="mt-2">
+            {% if approved_memberships %}
+              {% for membership in approved_memberships %}
+                <div class="club-item">
+                  <span class="club-name">{{ membership.club.name }}</span>
 
 
-        <div class="fw-bold mb-1">Enrolled Clubs:</div>
 
-{% if user.profile.clubs.exists %}
-
-  <ul class="clubs-list list-unstyled">
-    {% for club in user.profile.clubs.all %}
-      <li>• {{ club.name }}</li>
-    {% empty %}
-      <li>No clubs enrolled yet.</li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No clubs enrolled yet.</p>
-{% endif %}
-
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted mb-0">No clubs joined yet.</p>
+              <a href="{% url 'club_list' %}" class="btn btn-sm btn-outline-primary mt-2">Explore Clubs</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
 
       <!-- Buttons -->
       <div class="mt-4 text-center">
-        <a href="{% url 'edit_profile' %}" class="btn btn-custom">Edit Profile</a>
+        <a href="{% url 'edit_profile' %}" class="btn btn-custom">✏️ Edit Profile</a>
+        <a href="{% url 'club_list' %}" class="btn btn-custom" style="background: #28a745; margin-left: 10px;">
+          🏆 Browse Clubs
+        </a>
         <div><a href="{% url 'home' %}" class="back-home">← Back to Home</a></div>
       </div>
     </div>

@@ -31,6 +31,8 @@ def signup(request):
         email = request.POST['email']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
+        department = request.POST.get('department', '')
+        semester = request.POST.get('semester', '')
 
         if password1 != password2:
             return HttpResponse("""
@@ -53,12 +55,21 @@ def signup(request):
         )
         user.save()
 
+        profile, created = Profile.objects.get_or_create(user=user)
+        if department:
+            profile.department = department
+        if semester:
+            profile.semester = semester
+        profile.save()
+
+        # ✅ এই return টি POST request এর জন্য
         return HttpResponse(f"""
             <h2 style='color:green;text-align:center;margin-top:20%;'>🎉 Welcome {first_name}!</h2>
             <p style='text-align:center;'>Your account has been created successfully.</p>
             <a href='/clubnest/signin/' style='display:block;text-align:center;'>🚀 Go to Sign In</a>
         """)
 
+    # ✅ এই return টি GET request এর জন্য (if statement এর বাইরে)
     return render(request, "signup.html")
 
 
@@ -81,9 +92,36 @@ def logout_view(request):
 
 
 # ---------- PROFILE ----------
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
+from .models import Profile
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+
 @login_required
-def profile(request):
-    return render(request, 'profile.html')
+def profile_view(request, user_id=None):
+    if user_id:
+        user = get_object_or_404(User, id=user_id)
+    else:
+        user = request.user
+
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    # ✅ Approved clubs বের করুন
+    approved_memberships = Membership.objects.filter(
+        profile=profile,
+        is_approved=True
+    ).select_related('club')
+
+    return render(request, 'profile.html', {
+        'profile': profile,
+        'approved_memberships': approved_memberships  # ✅ clubs pass করছি
+    })
+
+
+
+
 
 
 @login_required
@@ -171,25 +209,34 @@ from .models import Club, Event
 
 from django.shortcuts import render, get_object_or_404
 from datetime import date
-from .models import Club, Event
+from django.shortcuts import render, get_object_or_404
+from datetime import date
+from .models import Club, Event, Membership
 
 def club_detail(request, slug):
     club = get_object_or_404(Club, slug=slug)
     today = date.today()
 
-    # Filter by club ForeignKey OR by society name (backup)
+    # Approved members, ensure related user is fetched
+    approved_members = Membership.objects.filter(
+        club=club,
+        is_approved=True,
+        profile__user__isnull=False  # Only members with valid user
+    ).select_related('profile__user')  # <-- select_related user
+
+    # Upcoming events
     upcoming_events = Event.objects.filter(
-        models.Q(club=club) | models.Q(society__icontains=club.name),
+        club=club,
         date__gte=today
     ).order_by('date')
 
     context = {
         'club': club,
         'events': upcoming_events,
+        'approved_members': approved_members
     }
     return render(request, 'club_detail.html', context)
 
-# ---------- EVENTS ----------
 def events_page(request):
     today = date.today()
     user = request.user if request.user.is_authenticated else None
@@ -432,5 +479,27 @@ def sponsor_list(request):
     return render(request, 'sponsor_list.html', context)
 
 
+@login_required
+def all_members(request, club_slug):
+    club = get_object_or_404(Club, slug=club_slug)
+    approved_members = Membership.objects.filter(club=club, is_approved=True).select_related('profile', 'profile__user')
+
+    return render(request, 'all_members.html', {
+        'club': club,
+        'approved_members': approved_members
+    })
 
 
+@login_required
+def leave_club(request, club_id):
+    club = get_object_or_404(Club, id=club_id)
+    profile = get_object_or_404(Profile, user=request.user)
+
+    try:
+        membership = Membership.objects.get(profile=profile, club=club)
+        membership.delete()
+        messages.success(request, f"You have left {club.name} successfully.")
+    except Membership.DoesNotExist:
+        messages.error(request, "You are not a member of this club.")
+
+    return redirect('profile')
