@@ -936,110 +936,35 @@
             </div>
         </div>
 
-        <!-- Gallery Section -->
-        <div class="gallery-section">
-            <div class="section-header">
-                <h4>Our Gallery</h4>
-                <p>Explore moments from our events, activities, and campus life</p>
-            </div>
-            
-            <div class="gallery-controls">
-                <div class="gallery-filters">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="events">Events</button>
-                    <button class="filter-btn" data-filter="workshops">Workshops</button>
-                    <button class="filter-btn" data-filter="social">Social</button>
-                </div>
-                <button class="upload-btn" id="upload-toggle">
-                    <i class="fas fa-plus"></i> Upload Image
-                </button>
-            </div>
-
-            <!-- Upload Form (Visible only to admins) -->
-            <div class="upload-form" id="upload-form">
-                <h3>Upload New Image</h3>
-                <form id="image-upload-form">
-                    <div class="form-group">
-                        <label for="image-title">Image Title</label>
-                        <input type="text" id="image-title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="image-category">Category</label>
-                        <select id="image-category" required>
-                            <option value="events">Events</option>
-                            <option value="workshops">Workshops</option>
-                            <option value="social">Social</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="image-date">Date</label>
-                        <input type="date" id="image-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="image-file">Select Image</label>
-                        <input type="file" id="image-file" accept="image/*" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="cancel-upload">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Upload</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="gallery-grid" id="gallery-grid">
-                <!-- Gallery items will be dynamically added here -->
-                <div class="gallery-item" data-category="events">
-                    <img src="/media/gallery/event1.jpg" alt="Annual Club Fair">
-                    <div class="gallery-overlay">
-                        <div class="gallery-title">Annual Club Fair</div>
-                        <div class="gallery-date">October 15, 2023</div>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="workshops">
-                    <img src="/media/gallery/workshop1.jpg" alt="Leadership Workshop">
-                    <div class="gallery-overlay">
-                        <div class="gallery-title">Leadership Workshop</div>
-                        <div class="gallery-date">September 22, 2023</div>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="social">
-                    <img src="/media/gallery/social1.jpg" alt="Welcome Party">
-                    <div class="gallery-overlay">
-                        <div class="gallery-title">Welcome Party</div>
-                        <div class="gallery-date">August 30, 2023</div>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="events">
-                    <img src="/media/gallery/event2.jpg" alt="Tech Conference">
-                    <div class="gallery-overlay">
-                        <div class="gallery-title">Tech Conference</div>
-                        <div class="gallery-date">November 5, 2023</div>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="workshops">
-                    <img src="/media/gallery/workshop2.jpg" alt="Career Development">
-                    <div class="gallery-overlay">
-                        <div class="gallery-title">Career Development</div>
-                        <div class="gallery-date">October 8, 2023</div>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="social">
-                    <img src="/media/gallery/social2.jpg" alt="End of Semester Celebration">
-                    <div class="gallery-overlay">
-                        <div class="gallery-title">End of Semester Celebration</div>
-                        <div class="gallery-date">December 12, 2023</div>
-                    </div>
-                </div>
-            </div>
+ <!-- Gallery Section -->
+<div class="gallery-section">
+    <div class="section-header">
+        <h4>Our Gallery</h4>
+        <p>Explore moments from our events, activities, and campus life</p>
+    </div>
+    
+    <div class="gallery-controls">
+        <div class="gallery-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="events">Events</button>
+            <button class="filter-btn" data-filter="workshops">Workshops</button>
+            <button class="filter-btn" data-filter="social">Social</button>
         </div>
+    </div>
 
-        <!-- Image Modal -->
-        <div class="modal" id="image-modal">
-            <div class="modal-content">
-                <span class="modal-close" id="modal-close">&times;</span>
-                <img id="modal-image" src="" alt="">
-            </div>
-        </div>
+    <!-- Gallery Grid (empty, JS will populate) -->
+    <div class="gallery-grid" id="gallery-grid">
+        <!-- Gallery items loaded from backend -->
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal" id="image-modal">
+    <div class="modal-content">
+        <span class="modal-close" id="modal-close">&times;</span>
+        <img id="modal-image" src="" alt="">
+    </div>
+</div>
 
         <div class="team-section">
             <div class="section-header">
@@ -1102,214 +1027,88 @@
         </div>
     </main>
 <script>
-    // Gallery functionality with Django backend integration
-    document.addEventListener('DOMContentLoaded', function() {
-        // Elements
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const galleryGrid = document.getElementById('gallery-grid');
-        const uploadToggle = document.getElementById('upload-toggle');
-        const uploadForm = document.getElementById('upload-form');
-        const cancelUpload = document.getElementById('cancel-upload');
-        const imageUploadForm = document.getElementById('image-upload-form');
-        const imageModal = document.getElementById('image-modal');
-        const modalClose = document.getElementById('modal-close');
-        const modalImage = document.getElementById('modal-image');
-        const galleryLink = document.getElementById('gallery-link');
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const galleryGrid = document.getElementById('gallery-grid');
+    const imageModal = document.getElementById('image-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalImage = document.getElementById('modal-image');
 
-        let galleryItems = [];
-        const isAdmin = {{ is_admin|yesno:"true,false" }}; // From Django context
+    let galleryItems = [];
 
-        // Hide upload button and form for non-admin users
-        if (!isAdmin && uploadToggle) {
-            uploadToggle.style.display = 'none';
-        }
-        if (!isAdmin && uploadForm) {
-            uploadForm.style.display = 'none';
-        }
+    // Load gallery images from backend
+    function loadGalleryImages() {
+        fetch('/get-gallery-images/')
+        .then(response => response.json())
+        .then(data => {
+            galleryGrid.innerHTML = '';
+            galleryItems = [];
 
-        // Filter functionality
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                const filterValue = this.getAttribute('data-filter');
-                
-                galleryItems.forEach(item => {
-                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        });
+            if (data.images && data.images.length > 0) {
+                data.images.forEach(image => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.setAttribute('data-category', image.category);
 
-        // Upload form toggle (only for admin)
-        if (uploadToggle) {
-            uploadToggle.addEventListener('click', function() {
-                if (uploadForm) {
-                    uploadForm.style.display = uploadForm.style.display === 'block' ? 'none' : 'block';
-                }
-            });
-        }
-
-        // Cancel upload
-        if (cancelUpload) {
-            cancelUpload.addEventListener('click', function() {
-                if (uploadForm) {
-                    uploadForm.style.display = 'none';
-                }
-                if (imageUploadForm) {
-                    imageUploadForm.reset();
-                }
-            });
-        }
-
-        // Image upload form submission (only for admin)
-        if (imageUploadForm) {
-            imageUploadForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData();
-                formData.append('title', document.getElementById('image-title').value);
-                formData.append('category', document.getElementById('image-category').value);
-                formData.append('date_taken', document.getElementById('image-date').value);
-                formData.append('image', document.getElementById('image-file').files[0]);
-                
-                // Add CSRF token
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                
-                fetch('/upload-gallery-image/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        loadGalleryImages(); // Reload gallery
-                        imageUploadForm.reset();
-                        uploadForm.style.display = 'none';
-                        alert('Image uploaded successfully!');
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error uploading image');
-                });
-            });
-        }
-
-        // Load gallery images from backend
-        function loadGalleryImages() {
-            fetch('/get-gallery-images/')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Gallery data received:', data); // Debug line
-                    
-                    galleryGrid.innerHTML = '';
-                    galleryItems = [];
-                    
-                    // Check if data.images exists and has items
-                    if (data.images && data.images.length > 0) {
-                        data.images.forEach(image => {
-                            const galleryItem = document.createElement('div');
-                            galleryItem.className = 'gallery-item';
-                            galleryItem.setAttribute('data-category', image.category);
-                            
-                            galleryItem.innerHTML = `
-                                <img src="${image.image_url}" alt="${image.title}" loading="lazy">
-                                <div class="gallery-overlay">
-                                    <div class="gallery-title">${image.title}</div>
-                                    <div class="gallery-date">${image.date}</div>
-                                </div>
-                            `;
-                            
-                            // Add click event for modal
-                            galleryItem.querySelector('img').addEventListener('click', function() {
-                                modalImage.src = this.src;
-                                modalImage.alt = this.alt;
-                                imageModal.style.display = 'flex';
-                            });
-                            
-                            galleryGrid.appendChild(galleryItem);
-                            galleryItems.push(galleryItem);
-                        });
-                        
-                        console.log('Gallery images loaded:', data.images.length); // Debug
-                    } else {
-                        // Show message if no images found
-                        galleryGrid.innerHTML = `
-                            <div class="no-images-message" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
-                                <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                                <h3>No Images Found</h3>
-                                <p>No gallery images available yet.</p>
-                                ${isAdmin ? '<p>Click the "Upload Image" button to add images.</p>' : ''}
-                            </div>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading gallery:', error);
-                    galleryGrid.innerHTML = `
-                        <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #d32f2f;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                            <h3>Error Loading Gallery</h3>
-                            <p>Failed to load gallery images. Please try again later.</p>
-                            <p><small>Error: ${error.message}</small></p>
+                    galleryItem.innerHTML = `
+                        <img src="${image.image_url}" alt="${image.title}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <div class="gallery-title">${image.title}</div>
+                            <div class="gallery-date">${image.date}</div>
                         </div>
                     `;
+
+                    galleryItem.querySelector('img').addEventListener('click', function() {
+                        modalImage.src = this.src;
+                        modalImage.alt = this.alt;
+                        imageModal.style.display = 'flex';
+                    });
+
+                    galleryGrid.appendChild(galleryItem);
+                    galleryItems.push(galleryItem);
                 });
-        }
-
-        // Modal functionality
-        modalClose.addEventListener('click', function() {
-            imageModal.style.display = 'none';
-        });
-
-        // Close modal when clicking outside
-        imageModal.addEventListener('click', function(e) {
-            if (e.target === imageModal) {
-                imageModal.style.display = 'none';
+            } else {
+                galleryGrid.innerHTML = `<p style="text-align:center; grid-column:1/-1;">No images available.</p>`;
             }
-        });
+        })
+        .catch(error => console.error('Error fetching gallery:', error));
+    }
 
-        // Gallery link scroll to gallery section
-        if (galleryLink) {
-            galleryLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelector('.gallery-section').scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        }
+    loadGalleryImages(); // Initial load
 
-        // Keyboard navigation for modal
-        document.addEventListener('keydown', function(e) {
-            if (imageModal.style.display === 'flex') {
-                if (e.key === 'Escape') {
-                    imageModal.style.display = 'none';
+    // Filter buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            const filterValue = this.getAttribute('data-filter');
+            galleryItems.forEach(item => {
+                if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
                 }
-            }
+            });
         });
-
-        // Initial load of gallery images
-        loadGalleryImages();
     });
+
+    // Modal close
+    if (modalClose) modalClose.addEventListener('click', () => {
+        imageModal.style.display = 'none';
+        modalImage.src = '';
+    });
+
+    // Close modal on outside click
+    imageModal.addEventListener('click', e => {
+        if (e.target === imageModal) {
+            imageModal.style.display = 'none';
+            modalImage.src = '';
+        }
+    });
+});
 </script>
+
 
 </body>
 </html>
